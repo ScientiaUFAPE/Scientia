@@ -10,6 +10,11 @@ export async function listar(req, res) {
   });
 }
 
+export async function relacionadas(req, res) {
+  const relacionadas = await publicacaoService.listarRelacionadas(req.params.id, req.query.limite);
+  res.json({ publicacoes: listaDePublicacoesResposta(relacionadas) });
+}
+
 export async function detalhar(req, res) {
   const publicacao = await publicacaoService.buscarPorId(req.params.id);
   res.json({ publicacao: publicacaoResposta(publicacao) });

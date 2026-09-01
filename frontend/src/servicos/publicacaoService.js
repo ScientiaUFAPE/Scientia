@@ -8,6 +8,10 @@ export function buscarPorId(id) {
   return requisitar(`/publicacoes/${id}`);
 }
 
+export function buscarRelacionadas(id, token, limite = 5) {
+  return requisitar(`/publicacoes/${id}/relacionadas?limite=${limite}`, { token });
+}
+
 export function cadastrar(dados, token) {
   return requisitar('/publicacoes', { metodo: 'POST', corpo: dados, token });
 }

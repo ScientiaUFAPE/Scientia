@@ -815,7 +815,6 @@ describe('Acervo público', () => {
 
 });
 
-
 describe('Indicadores de produções científicas', () => {
   beforeEach(reiniciarCenarioAcervoTeste);
 
@@ -895,6 +894,105 @@ describe('Indicadores de produções científicas', () => {
       porArea: [],
       areasDestaque: [],
     });
+  });
+});
+
+describe('Produções relacionadas', () => {
+  beforeEach(reiniciarCenarioAcervoTeste);
+
+  it('retorna 401 sem token e 200 com token válido', async () => {
+    let resposta = await request(app).get('/api/publicacoes/1/relacionadas');
+    assert.strictEqual(resposta.status, 401);
+
+    const token = await tokenPesquisadorTeste();
+    resposta = await request(app)
+      .get('/api/publicacoes/1/relacionadas')
+      .set('Authorization', `Bearer ${token}`);
+    assert.strictEqual(resposta.status, 200);
+  });
+
+  it('não retorna a própria publicação', async () => {
+    const token = await tokenPesquisadorTeste();
+    const resposta = await request(app)
+      .get('/api/publicacoes/1/relacionadas')
+      .set('Authorization', `Bearer ${token}`);
+    assert.strictEqual(resposta.status, 200);
+    const publicacoes = resposta.body.publicacoes;
+    const contemPropria = publicacoes.some((p) => p.id === 1);
+    assert.strictEqual(contemPropria, false);
+  });
+
+  it('prioriza maior número de áreas em comum e respeita desempates', async () => {
+    // A publicação 1 tem tipo 'artigo' e área 1. Vamos adicionar a área 2 para ela ter 2 áreas.
+    await pool.query('INSERT INTO area_publicacao (id_publicacao, id_area) VALUES (1, 2)');
+
+    // Pub 10: 2 áreas em comum (1 e 2), tipo diferente (resumo), ano 2024
+    await pool.query("INSERT INTO publicacao (id_publicacao, id_projeto, tipo, ano, titulo, veiculo) VALUES (10, 3, 'resumo', 2024, 'Pub 10', 'V')");
+    await pool.query("INSERT INTO area_publicacao (id_publicacao, id_area) VALUES (10, 1), (10, 2)");
+
+    // Pub 11: 1 área em comum (1), mesmo tipo (artigo), ano 2025 (desempate por ano mais recente)
+    await pool.query("INSERT INTO publicacao (id_publicacao, id_projeto, tipo, ano, titulo, veiculo) VALUES (11, 3, 'artigo', 2025, 'Pub 11', 'V')");
+    await pool.query("INSERT INTO area_publicacao (id_publicacao, id_area) VALUES (11, 1)");
+
+    // Pub 12: 1 área em comum (1), mesmo tipo (artigo), ano 2024 (desempate por id_publicacao menor que 13)
+    await pool.query("INSERT INTO publicacao (id_publicacao, id_projeto, tipo, ano, titulo, veiculo) VALUES (12, 3, 'artigo', 2024, 'Pub 12', 'V')");
+    await pool.query("INSERT INTO area_publicacao (id_publicacao, id_area) VALUES (12, 1)");
+
+    // Pub 13: 1 área em comum (1), mesmo tipo (artigo), ano 2024 (desempate por id_publicacao maior)
+    await pool.query("INSERT INTO publicacao (id_publicacao, id_projeto, tipo, ano, titulo, veiculo) VALUES (13, 3, 'artigo', 2024, 'Pub 13', 'V')");
+    await pool.query("INSERT INTO area_publicacao (id_publicacao, id_area) VALUES (13, 1)");
+
+    // Pub 14: 1 área em comum (1), tipo diferente (capitulo), ano 2025 (perde para os de mesmo tipo)
+    await pool.query("INSERT INTO publicacao (id_publicacao, id_projeto, tipo, ano, titulo, veiculo) VALUES (14, 3, 'capitulo', 2025, 'Pub 14', 'V')");
+    await pool.query("INSERT INTO area_publicacao (id_publicacao, id_area) VALUES (14, 1)");
+
+    const token = await tokenPesquisadorTeste();
+    const resposta = await request(app)
+      .get('/api/publicacoes/1/relacionadas?limite=10')
+      .set('Authorization', `Bearer ${token}`);
+
+    assert.strictEqual(resposta.status, 200);
+    const idsRetornados = resposta.body.publicacoes.map(p => p.id);
+
+    // Valida exata ordem:
+    // 1º: 10 (2 áreas)
+    // 2º: 11 (1 área, 'artigo', 2025)
+    // 3º: 13 (1 área, 'artigo', 2024, id_publicacao DESC)
+    // 4º: 12 (1 área, 'artigo', 2024)
+    // 5º: 14 (1 área, 'capitulo', 2025)
+    assert.deepStrictEqual(idsRetornados.slice(0, 5), [10, 11, 13, 12, 14]);
+  });
+
+  it('respeita limite padrão e máximo; ID inexistente retorna 404', async () => {
+    const token = await tokenPesquisadorTeste();
+
+    let resposta = await request(app)
+      .get('/api/publicacoes/1/relacionadas')
+      .set('Authorization', `Bearer ${token}`);
+    assert.ok(resposta.body.publicacoes.length <= 5);
+
+    resposta = await request(app)
+      .get('/api/publicacoes/1/relacionadas?limite=20')
+      .set('Authorization', `Bearer ${token}`);
+    assert.strictEqual(resposta.status, 400);
+
+    resposta = await request(app)
+      .get('/api/publicacoes/999999/relacionadas')
+      .set('Authorization', `Bearer ${token}`);
+    assert.strictEqual(resposta.status, 404);
+  });
+
+  it('resultados trazem autores e áreas', async () => {
+    const token = await tokenPesquisadorTeste();
+    const resposta = await request(app)
+      .get('/api/publicacoes/1/relacionadas')
+      .set('Authorization', `Bearer ${token}`);
+    assert.strictEqual(resposta.status, 200);
+    const publicacoes = resposta.body.publicacoes;
+    if (publicacoes.length > 0) {
+      assert.ok(Array.isArray(publicacoes[0].autores));
+      assert.ok(Array.isArray(publicacoes[0].areas));
+    }
   });
 });
 

@@ -8,6 +8,7 @@ import { CadastroPublicacao } from './paginas/CadastroPublicacao.jsx';
 import { Candidaturas } from './paginas/Candidaturas.jsx';
 import { DetalheGrupo } from './paginas/DetalheGrupo.jsx';
 import { DetalheProjeto } from './paginas/DetalheProjeto.jsx';
+import { DetalhePublicacao } from './paginas/DetalhePublicacao.jsx';
 import { EditarProjeto } from './paginas/EditarProjeto.jsx';
 import { EditarPublicacao } from './paginas/EditarPublicacao.jsx';
 import { Grupos } from './paginas/Grupos.jsx';
@@ -49,6 +50,7 @@ export function App() {
           <Route path="/sem-permissao" element={<SemPermissao />} />
           <Route path="/candidaturas" element={<Candidaturas />} />
           <Route path="/indicadores" element={<IndicadoresProducoes />} />
+          <Route path="/publicacoes/:id" element={<DetalhePublicacao />} />
 
           <Route element={<RotaProtegida tipos={['pesquisador', 'admin']} />}>
             <Route path="/publicacoes/cadastro" element={<CadastroPublicacao />} />

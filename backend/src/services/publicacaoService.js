@@ -57,6 +57,20 @@ export async function listar(filtros) {
   };
 }
 
+export async function listarRelacionadas(valorId, valorLimite) {
+  const id = validarId(valorId);
+  const limite = validarInteiroOpcional(valorLimite, 'O limite deve ser um número inteiro.', { minimo: 1, maximo: 10 }) ?? 5;
+
+  const publicacao = await repositorioPublicacoes.buscarPorId(id);
+  if (!publicacao) {
+    throw new ErroHttp(404, 'Publicação não encontrada.');
+  }
+
+  const relacionadas = await repositorioPublicacoes.buscarRelacionadas(id, limite);
+
+  return relacionadas;
+}
+
 export async function buscarPorId(valorId) {
   const id = validarId(valorId);
   const publicacao = await repositorioPublicacoes.buscarPorId(id);

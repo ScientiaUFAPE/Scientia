@@ -213,7 +213,11 @@ export function Publicacoes({ idPesquisadorFixo }) {
                 <span className="cartao-acervo__ano">{publicacao.ano}</span>
               </div>
 
-              <h2 className="cartao-acervo__titulo">{publicacao.titulo}</h2>
+              <h2 className="cartao-acervo__titulo">
+                <Link to={`/publicacoes/${publicacao.id}`}>
+                  {publicacao.titulo}
+                </Link>
+              </h2>
               <p className="cartao-acervo__autores">{nomesDosAutores(publicacao.autores)}</p>
               <p className="cartao-acervo__veiculo">{publicacao.veiculo}</p>
 

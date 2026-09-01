@@ -63,6 +63,49 @@ export async function buscarPorId(id) {
   return publicacao;
 }
 
+export async function buscarRelacionadas(idPublicacao, limite) {
+  const { rows } = await consultar(
+    `
+      SELECT
+        p.id_publicacao,
+        p.titulo,
+        p.tipo,
+        p.ano,
+        p.doi,
+        p.veiculo,
+        pr.id_projeto,
+        pr.titulo AS titulo_projeto,
+        COUNT(DISTINCT candidatas.id_area)::int AS areas_em_comum,
+        (p.tipo = p_origem.tipo) AS mesmo_tipo
+      FROM publicacao p_origem
+      JOIN area_publicacao origem ON origem.id_publicacao = p_origem.id_publicacao
+      JOIN area_publicacao candidatas ON candidatas.id_area = origem.id_area
+      JOIN publicacao p ON p.id_publicacao = candidatas.id_publicacao
+      JOIN projeto_pesquisa pr ON pr.id_projeto = p.id_projeto
+      WHERE p_origem.id_publicacao = $1
+        AND p.id_publicacao <> $1
+      GROUP BY p.id_publicacao, pr.id_projeto, p_origem.tipo
+      ORDER BY
+        areas_em_comum DESC,
+        mesmo_tipo DESC,
+        p.ano DESC,
+        p.id_publicacao DESC
+      LIMIT $2
+    `,
+    [idPublicacao, limite],
+  );
+
+  const publicacoes = rows.map((linha) => {
+    const pub = mapearPublicacao(linha);
+    pub.areasEmComum = linha.areas_em_comum;
+    return pub;
+  });
+
+  await Promise.all([preencherAutores(publicacoes), preencherAreas(publicacoes)]);
+
+  return publicacoes;
+}
+
 export async function existe(id, executor) {
   const { rows } = await executarConsulta(
     executor,
