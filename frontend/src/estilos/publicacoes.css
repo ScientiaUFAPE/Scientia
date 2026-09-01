@@ -64,62 +64,6 @@
   padding: 0;
 }
 
-.cartao-acervo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.cartao-acervo h2,
-.cartao-acervo h3 {
-  margin-bottom: 0;
-}
-
-.cartao-acervo__topo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.cartao-acervo__ano {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--texto-suave);
-  white-space: nowrap;
-}
-
-.cartao-acervo__titulo {
-  font-size: 1.05rem;
-}
-
-.cartao-acervo__autores {
-  font-size: 0.9rem;
-}
-
-.cartao-acervo__veiculo {
-  font-size: 13px;
-  color: var(--mudo);
-}
-
-.cartao-acervo__vinculo {
-  font-size: 0.9rem;
-  color: var(--texto-suave);
-}
-
-/* Os chips e o link do DOI ficam rentes ao rodapé do card, alinhando os
-   cards vizinhos pela mesma linha de base. */
-.cartao-acervo .lista-chips {
-  margin-top: auto;
-}
-
-.cartao-acervo__link {
-  margin-top: auto;
-  font-weight: 600;
-  font-size: 0.9rem;
-  word-break: break-word;
-}
-
 .etiqueta--tipo {
   border-color: var(--fio);
   color: var(--mudo);
@@ -210,7 +154,6 @@
   color: var(--erro);
 }
 
-
 /* ---- Acervo em linhas, agrupado por ano ---- */
 
 .grupo-ano {
@@ -256,10 +199,15 @@
   font: inherit;
   color: inherit;
   text-align: left;
+}
+
+button.linha-acervo,
+.linha-acervo--navega .linha-acervo__alvo {
   cursor: pointer;
 }
 
-.linha-acervo:hover {
+button.linha-acervo:hover,
+.linha-acervo--navega:hover {
   border-color: #dcdce0;
   background-color: #fcfcfd;
 }
@@ -452,4 +400,79 @@ body.com-painel .layout {
 
 .busca-alta input::placeholder {
   color: var(--mudo);
+}
+
+/* Linha que navega: o alvo cobre a linha toda, as ações ficam por cima */
+.linha-acervo--navega {
+  position: relative;
+  cursor: default;
+}
+
+.linha-acervo__alvo {
+  font-weight: 500;
+  color: inherit;
+}
+
+.linha-acervo__alvo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--raio);
+}
+
+.linha-acervo__alvo:hover {
+  text-decoration: none;
+}
+
+.linha-acervo__meta {
+  flex: none;
+  font-size: 13px;
+  color: var(--mudo);
+  white-space: nowrap;
+}
+
+.linha-acervo__acoes {
+  position: relative;
+  flex: none;
+  display: flex;
+  gap: 6px;
+}
+
+.linha-acervo__acoes .botao {
+  height: 30px;
+  padding: 0 0.6rem;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.linha-acervo--dupla {
+  height: auto;
+  align-items: flex-start;
+  padding: 13px 16px;
+}
+
+.linha-acervo--dupla .linha-acervo__corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.linha-acervo--dupla .linha-acervo__resumo {
+  color: var(--mudo);
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.linha-acervo__meta--link {
+  position: relative;
+  color: var(--mudo-forte);
+}
+
+.linha-acervo__meta--link:hover {
+  color: var(--tinta);
+  text-decoration: underline;
 }

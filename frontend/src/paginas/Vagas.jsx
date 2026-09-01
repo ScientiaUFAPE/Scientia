@@ -94,27 +94,28 @@ export function Vagas() {
       {!carregando && !erro && vagas.length > 0 && (
         <ul className="lista-acervo">
           {vagas.map((vaga) => (
-            <li key={vaga.id} className="cartao cartao-acervo">
-              <div className="cartao-acervo__topo">
-                <span className={`etiqueta etiqueta--${vaga.status}`}>{vaga.status}</span>
-                <span className="cartao-acervo__ano">
-                  {vaga.qtdVagas} {vaga.qtdVagas === 1 ? 'vaga' : 'vagas'}
+            <li key={vaga.id} className="linha-acervo linha-acervo--dupla">
+              <span className="linha-acervo__corpo">
+                <span className="linha-acervo__titulo">{vaga.titulo}</span>
+                <span className="linha-acervo__resumo">
+                  <Link to={`/projetos/${vaga.projeto.id}`}>{vaga.projeto.titulo}</Link>
+                  {' · '}
+                  {vaga.requisitos || 'Sem requisitos informados.'}
                 </span>
-              </div>
+                <span className="linha-acervo__resumo">
+                  Aberta em {formatarData(vaga.dataAbertura)} · {vaga.totalCandidaturas}{' '}
+                  {vaga.totalCandidaturas === 1 ? 'candidatura' : 'candidaturas'}
+                </span>
+              </span>
 
-              <h2 className="cartao-acervo__titulo">{vaga.titulo}</h2>
-              <p className="cartao-acervo__vinculo">
-                Projeto:{' '}
-                <Link to={`/projetos/${vaga.projeto.id}`}>{vaga.projeto.titulo}</Link>
-              </p>
-              <p>{vaga.requisitos || 'Sem requisitos informados.'}</p>
-              <p className="cartao-acervo__vinculo">
-                Aberta em {formatarData(vaga.dataAbertura)} · {vaga.totalCandidaturas}{' '}
-                {vaga.totalCandidaturas === 1 ? 'candidatura' : 'candidaturas'}
-              </p>
+              <span className="linha-acervo__meta">
+                {vaga.qtdVagas} {vaga.qtdVagas === 1 ? 'vaga' : 'vagas'}
+              </span>
+
+              <span className={`etiqueta etiqueta--${vaga.status}`}>{vaga.status}</span>
 
               {podeCadastrarNoAcervo(usuario) && (
-                <div className="acoes-registro">
+                <span className="linha-acervo__acoes">
                   <Link className="botao botao--discreto" to={`/vagas/${vaga.id}/editar`}>
                     Editar
                   </Link>
@@ -125,7 +126,7 @@ export function Vagas() {
                   >
                     Excluir
                   </button>
-                </div>
+                </span>
               )}
             </li>
           ))}

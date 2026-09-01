@@ -120,34 +120,33 @@ export function Grupos() {
       {!carregando && !erro && grupos.length > 0 && (
         <ul className="lista-acervo">
           {grupos.map((grupo) => (
-            <li key={grupo.id} className="cartao cartao-acervo">
-              <div className="cartao-acervo__topo">
-                <span className="etiqueta etiqueta--tipo">Grupo</span>
-                <span className="cartao-acervo__ano">{grupo.anoCriacao}</span>
-              </div>
+            <li key={grupo.id} className="linha-acervo linha-acervo--navega">
+              <span className="linha-acervo__area">{grupo.anoCriacao}</span>
 
-              <h2 className="cartao-acervo__titulo">
-                <Link to={`/grupos/${grupo.id}`}>{grupo.nome}</Link>
-              </h2>
+              <Link className="linha-acervo__titulo linha-acervo__alvo" to={`/grupos/${grupo.id}`}>
+                {grupo.nome}
+              </Link>
 
-              <p className="cartao-acervo__vinculo">
+              <span className="linha-acervo__meta">
                 {grupo.totalProjetos} {grupo.totalProjetos === 1 ? 'projeto' : 'projetos'} ·{' '}
                 {grupo.totalMembros} {grupo.totalMembros === 1 ? 'membro' : 'membros'}
-              </p>
+              </span>
 
               {grupo.linkDgp && (
                 <a
-                  className="cartao-acervo__link"
+                  className="linha-acervo__acoes botao botao--discreto"
                   href={grupo.linkDgp}
                   target="_blank"
                   rel="noopener noreferrer"
+                  aria-label="Perfil no Diretório de Grupos"
+                  title="Perfil no Diretório de Grupos"
                 >
-                  Perfil no Diretório de Grupos
+                  DGP
                 </a>
               )}
 
               {podeCadastrarNoAcervo(usuario) && (
-                <div className="acoes-registro">
+                <span className="linha-acervo__acoes">
                   <Link className="botao botao--discreto" to={`/grupos/${grupo.id}/editar`}>
                     Editar
                   </Link>
@@ -158,7 +157,7 @@ export function Grupos() {
                   >
                     Excluir
                   </button>
-                </div>
+                </span>
               )}
             </li>
           ))}
