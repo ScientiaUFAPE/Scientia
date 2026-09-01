@@ -65,3 +65,49 @@ export function totalDePaginas(paginacao) {
 
   return Math.max(1, Math.ceil(paginacao.total / paginacao.porPagina));
 }
+
+export function siglaDaArea(nome) {
+  if (!nome) {
+    return '';
+  }
+
+  return nome
+    .split(/\s+/)
+    .filter((parte) => parte.length > 2)
+    .map((parte) => parte[0])
+    .join('')
+    .slice(0, 3)
+    .toUpperCase();
+}
+
+export function iniciaisDoNome(nome) {
+  const partes = nome.trim().split(/\s+/);
+  const primeira = partes[0]?.[0] ?? '';
+  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+
+  return (primeira + ultima).toUpperCase();
+}
+
+export function agruparPorAno(publicacoes) {
+  const grupos = [];
+
+  publicacoes.forEach((publicacao) => {
+    const ultimo = grupos[grupos.length - 1];
+
+    if (ultimo && ultimo.ano === publicacao.ano) {
+      ultimo.itens.push(publicacao);
+    } else {
+      grupos.push({ ano: publicacao.ano, itens: [publicacao] });
+    }
+  });
+
+  return grupos;
+}
+
+export function saudacao(hora = new Date().getHours()) {
+  if (hora < 12) {
+    return 'Bom dia';
+  }
+
+  return hora < 18 ? 'Boa tarde' : 'Boa noite';
+}

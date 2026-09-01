@@ -6,10 +6,15 @@ import { useAuth } from '../contexto/AuthContext.jsx';
 import * as publicacaoService from '../servicos/publicacaoService.js';
 import * as areaService from '../servicos/areaService.js';
 import {
+  agruparPorAno,
+  iniciaisDoNome,
   nomesDosAutores,
+  ordenarAutores,
   podeCadastrarNoAcervo,
   POR_PAGINA,
   ROTULOS_TIPO,
+  saudacao,
+  siglaDaArea,
 } from '../utils/acervo.js';
 
 export function Publicacoes({ idPesquisadorFixo }) {
@@ -28,6 +33,13 @@ export function Publicacoes({ idPesquisadorFixo }) {
   const [pagina, setPagina] = useState(1);
 
   const [buscaAplicada, setBuscaAplicada] = useState('');
+  const [selecionada, setSelecionada] = useState(null);
+
+  useEffect(() => {
+    document.body.classList.toggle('com-painel', Boolean(selecionada));
+
+    return () => document.body.classList.remove('com-painel');
+  }, [selecionada]);
 
   useEffect(() => {
     let atual = true;
@@ -62,6 +74,7 @@ export function Publicacoes({ idPesquisadorFixo }) {
         }
         setPublicacoes(dados.publicacoes);
         setPaginacao(dados.paginacao);
+        setSelecionada(null);
       })
       .catch((falha) => atual && setErro(falha.message))
       .finally(() => atual && setCarregando(false));
@@ -113,6 +126,7 @@ export function Publicacoes({ idPesquisadorFixo }) {
     try {
       await publicacaoService.excluir(publicacao.id, token);
       setPublicacoes((atuais) => atuais.filter((item) => item.id !== publicacao.id));
+      setSelecionada(null);
     } catch (falha) {
       setErro(falha.message);
     }
@@ -121,29 +135,26 @@ export function Publicacoes({ idPesquisadorFixo }) {
   return (
     <section className="pagina">
       {!idPesquisadorFixo && (
-        <div className="pagina__cabecalho">
-          <div className="pagina__titulo">
-            <h1>Publicações</h1>
-          </div>
-
-          {podeCadastrarNoAcervo(usuario) && (
-            <Link to="/publicacoes/cadastro" className="botao botao--primario botao--compacto">
-              Cadastrar publicação
-            </Link>
-          )}
-        </div>
+        <h1 className="pagina__titulo">
+          {usuario ? `${saudacao()}, ${usuario.nome.split(' ')[0]}` : 'Publicações'}
+        </h1>
       )}
 
-      <form className="filtros-acervo" onSubmit={(evento) => evento.preventDefault()}>
-        <label className="campo filtros-acervo__busca">
-          <span>Buscar</span>
-          <input
-            type="search"
-            value={busca}
-            onChange={(evento) => setBusca(evento.target.value)}
-            placeholder="Título ou autor"
-          />
-        </label>
+      <div className="busca-alta">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          type="search"
+          value={busca}
+          onChange={(evento) => setBusca(evento.target.value)}
+          placeholder="Buscar por título ou autor"
+          aria-label="Buscar publicações"
+        />
+      </div>
+
+      <form className="filtros-acervo filtros-acervo--triplo" onSubmit={(evento) => evento.preventDefault()}>
 
         <label className="campo">
           <span>Área</span>
@@ -202,57 +213,142 @@ export function Publicacoes({ idPesquisadorFixo }) {
         </div>
       )}
 
-      {!carregando && !erro && publicacoes.length > 0 && (
-        <ul className="lista-acervo">
-          {publicacoes.map((publicacao) => (
-            <li key={publicacao.id} className="cartao cartao-acervo">
-              <div className="cartao-acervo__topo">
-                <span className="etiqueta etiqueta--tipo">
-                  {ROTULOS_TIPO[publicacao.tipo] ?? publicacao.tipo}
-                </span>
-                <span className="cartao-acervo__ano">{publicacao.ano}</span>
-              </div>
+      {!carregando && !erro && publicacoes.length > 0 &&
+        agruparPorAno(publicacoes).map((grupo) => (
+          <section className="grupo-ano" key={grupo.ano}>
+            <div className="grupo-ano__topo">
+              <span className="grupo-ano__ponto" />
+              <span className="grupo-ano__nome">{grupo.ano}</span>
+              <span className="grupo-ano__conta">({grupo.itens.length})</span>
+            </div>
 
-              <h2 className="cartao-acervo__titulo">
-                <Link to={`/publicacoes/${publicacao.id}`}>
-                  {publicacao.titulo}
-                </Link>
-              </h2>
-              <p className="cartao-acervo__autores">{nomesDosAutores(publicacao.autores)}</p>
-              <p className="cartao-acervo__veiculo">{publicacao.veiculo}</p>
-
-              {publicacao.projeto && (
-                <p className="cartao-acervo__vinculo">
-                  Projeto:{' '}
-                  <Link to={`/projetos/${publicacao.projeto.id}`}>
-                    {publicacao.projeto.titulo}
-                  </Link>
-                </p>
-              )}
-
-              {publicacao.doi && (
-                <a
-                  className="cartao-acervo__link"
-                  href={`https://doi.org/${publicacao.doi}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  DOI: {publicacao.doi}
-                </a>
-              )}
-
-              {podeCadastrarNoAcervo(usuario) && (
-                <div className="acoes-registro">
-                  <Link className="botao botao--discreto" to={`/publicacoes/${publicacao.id}/editar`}>Editar</Link>
-                  <button type="button" className="botao botao--discreto" onClick={() => excluirPublicacao(publicacao)}>Excluir</button>
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+            <ul className="lista-acervo">
+              {grupo.itens.map((publicacao) => (
+                <li key={publicacao.id}>
+                  <button
+                    type="button"
+                    className="linha-acervo"
+                    aria-current={selecionada?.id === publicacao.id}
+                    onClick={() => setSelecionada(publicacao)}
+                  >
+                    <span className="linha-acervo__area">
+                      {siglaDaArea(publicacao.areas?.[0]?.nome)}
+                    </span>
+                    <span className="linha-acervo__titulo">{publicacao.titulo}</span>
+                    <span className="linha-acervo__tipo">
+                      {ROTULOS_TIPO[publicacao.tipo] ?? publicacao.tipo}
+                    </span>
+                    <span className="pilha-autores">
+                      {ordenarAutores(publicacao.autores).slice(0, 3).map((autor) => (
+                        <span className="avatar" key={autor.id ?? autor.nome} title={autor.nome}>
+                          {iniciaisDoNome(autor.nome)}
+                        </span>
+                      ))}
+                    </span>
+                    <span className="linha-acervo__ano">{publicacao.ano}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
 
       {!carregando && !erro && <Paginacao paginacao={paginacao} aoTrocarPagina={setPagina} />}
+
+      {selecionada && (
+        <aside className="painel-detalhe">
+          <div className="painel-detalhe__topo">
+            <span className="grupo-ano__ponto" />
+            {ROTULOS_TIPO[selecionada.tipo] ?? selecionada.tipo} · {selecionada.ano}
+            <button
+              type="button"
+              className="painel-detalhe__fechar"
+              title="Fechar"
+              onClick={() => setSelecionada(null)}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
+                <path d="m6 6 12 12M18 6 6 18" />
+              </svg>
+            </button>
+          </div>
+
+          <h2 className="painel-detalhe__titulo">{selecionada.titulo}</h2>
+
+          <dl>
+            <div>
+              <dt>Autoria</dt>
+              <dd>
+                {ordenarAutores(selecionada.autores).map((autor) => (
+                  <span className="autor-linha" key={autor.id ?? autor.nome}>
+                    <span className="avatar">{iniciaisDoNome(autor.nome)}</span>
+                    {autor.nome}
+                  </span>
+                ))}
+              </dd>
+            </div>
+
+            <div>
+              <dt>Veículo</dt>
+              <dd>{selecionada.veiculo}</dd>
+            </div>
+
+            {selecionada.projeto && (
+              <div>
+                <dt>Projeto</dt>
+                <dd>
+                  <Link to={`/projetos/${selecionada.projeto.id}`}>
+                    {selecionada.projeto.titulo}
+                  </Link>
+                </dd>
+              </div>
+            )}
+
+            {selecionada.areas?.length > 0 && (
+              <div>
+                <dt>Áreas</dt>
+                <dd>
+                  <ul className="lista-chips">
+                    {selecionada.areas.map((area) => (
+                      <li className="chip" key={area.id}>{area.nome}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )}
+          </dl>
+
+          {selecionada.doi && (
+            <a
+              className="botao botao--discreto botao--compacto"
+              href={`https://doi.org/${selecionada.doi}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              DOI: {selecionada.doi}
+            </a>
+          )}
+
+          <div className="acoes-registro">
+            <Link className="botao botao--discreto" to={`/publicacoes/${selecionada.id}`}>
+              Abrir publicação
+            </Link>
+            {podeCadastrarNoAcervo(usuario) && (
+              <>
+                <Link className="botao botao--discreto" to={`/publicacoes/${selecionada.id}/editar`}>
+                  Editar
+                </Link>
+                <button
+                  type="button"
+                  className="botao botao--discreto"
+                  onClick={() => excluirPublicacao(selecionada)}
+                >
+                  Excluir
+                </button>
+              </>
+            )}
+          </div>
+        </aside>
+      )}
     </section>
   );
 }

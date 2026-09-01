@@ -55,23 +55,28 @@ describe('Tela de publicações', () => {
     vi.clearAllMocks();
   });
 
-  it('mostra o carregamento e depois um cartão por publicação', async () => {
+  it('mostra o carregamento e depois uma linha por publicação, com o resto no painel', async () => {
     renderizarTela();
     expect(screen.getByText(/carregando publicações/i)).toBeInTheDocument();
 
     await act(async () => {});
 
-    const cartao = screen
+    const linha = screen
       .getByText('Análise de desempenho de algoritmos de aprendizado')
-      .closest('li');
+      .closest('button');
 
-    expect(within(cartao).getByText('Artigo')).toBeInTheDocument();
-    expect(within(cartao).getByText('2024')).toBeInTheDocument();
-    expect(within(cartao).getByText('Revista Brasileira de Computação')).toBeInTheDocument();
+    expect(within(linha).getByText('Artigo')).toBeInTheDocument();
+    expect(within(linha).getByText('2024')).toBeInTheDocument();
+
+    fireEvent.click(linha);
+
+    const painel = screen.getByRole('complementary');
+
+    expect(within(painel).getByText('Revista Brasileira de Computação')).toBeInTheDocument();
     expect(
-      within(cartao).getByRole('link', { name: 'Inteligência artificial aplicada ao Agreste' }),
+      within(painel).getByRole('link', { name: 'Inteligência artificial aplicada ao Agreste' }),
     ).toHaveAttribute('href', '/projetos/3');
-    expect(within(cartao).getByRole('link', { name: /10\.1000\/exemplo\.1/ })).toHaveAttribute(
+    expect(within(painel).getByRole('link', { name: /10\.1000\/exemplo\.1/ })).toHaveAttribute(
       'href',
       'https://doi.org/10.1000/exemplo.1',
     );
@@ -86,14 +91,16 @@ describe('Tela de publicações', () => {
     renderizarTela();
     await act(async () => {});
 
-    const cartao = screen
-      .getByText('Mapeamento de cultivares com visão computacional')
-      .closest('li');
+    fireEvent.click(
+      screen.getByText('Mapeamento de cultivares com visão computacional').closest('button'),
+    );
 
-    expect(within(cartao).getByText('Ana Souza, Bruno Lima')).toBeInTheDocument();
+    expect(screen.getByRole('complementary').textContent).toMatch(
+      /Ana Souza[\s\S]*Bruno Lima/,
+    );
   });
 
-  it('sem DOI, o cartão não oferece o link do doi.org', async () => {
+  it('sem DOI, o painel não oferece o link do doi.org', async () => {
     publicacaoService.listar.mockResolvedValue({
       ...RESPOSTA_PUBLICACOES,
       publicacoes: [publicacaoComAutoresEmbaralhados],
@@ -102,6 +109,11 @@ describe('Tela de publicações', () => {
     renderizarTela();
     await act(async () => {});
 
+    fireEvent.click(
+      screen.getByText('Mapeamento de cultivares com visão computacional').closest('button'),
+    );
+
+    expect(screen.getByRole('complementary')).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /^DOI/ })).not.toBeInTheDocument();
   });
 
@@ -178,28 +190,4 @@ describe('Tela de publicações', () => {
     expect(screen.getByText(/API está no ar/i)).toBeInTheDocument();
   });
 
-  it('sem sessão ou com conta de aluno, não oferece o atalho de cadastro', async () => {
-    renderizarTela();
-    await act(async () => {});
-
-    expect(screen.queryByRole('link', { name: /cadastrar publicação/i })).not.toBeInTheDocument();
-
-    sessaoFalsa.usuario = { id: 152, nome: 'Ana Souza', tipo: 'aluno' };
-    renderizarTela();
-    await act(async () => {});
-
-    expect(screen.queryByRole('link', { name: /cadastrar publicação/i })).not.toBeInTheDocument();
-  });
-
-  it.each(['pesquisador', 'admin'])('a conta %s ganha o atalho de cadastro', async (tipo) => {
-    sessaoFalsa.usuario = { id: 7, nome: 'Ana Souza', tipo };
-
-    renderizarTela();
-    await act(async () => {});
-
-    expect(screen.getByRole('link', { name: /cadastrar publicação/i })).toHaveAttribute(
-      'href',
-      '/publicacoes/cadastro',
-    );
-  });
 });
