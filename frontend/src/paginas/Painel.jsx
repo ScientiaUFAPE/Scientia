@@ -8,7 +8,7 @@ export function Painel() {
 
   return (
     <section className="painel">
-      <h1 className="pagina__titulo">Olá, {usuario.nome.split(' ')[0]}!</h1>
+      <h1 className="pagina__titulo">Painel</h1>
       <p className="pagina__descricao">
         Você está autenticado no Scientia. Esta tela só é alcançada com um token válido.
       </p>

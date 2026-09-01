@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../contexto/AuthContext.jsx';
+import lockup from '../assets/lockup-horizontal.png';
 
 export function Login() {
   const { usuario, entrar } = useAuth();
@@ -35,7 +36,8 @@ export function Login() {
   return (
     <div className="tela-auth">
       <form className="cartao-auth" onSubmit={enviar}>
-        <h1 className="cartao-auth__titulo">Entrar no Scientia</h1>
+        <img className="cartao-auth__marca" src={lockup} alt="Scientia — Hub de Produção Científica do BCC" />
+        <h1 className="cartao-auth__titulo">Entrar</h1>
         <p className="cartao-auth__subtitulo">
           Acesse com sua conta para usar as áreas restritas do hub.
         </p>

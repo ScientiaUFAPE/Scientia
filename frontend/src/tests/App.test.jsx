@@ -107,7 +107,7 @@ describe('Guarda das rotas de cadastro no App', () => {
     renderizarApp('/indicadores');
     await act(async () => {});
 
-    expect(screen.getByRole('heading', { name: 'Entrar no Scientia' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Entrar' })).toBeInTheDocument();
     expect(
       screen.queryByRole('heading', { name: 'Indicadores de produções científicas' }),
     ).not.toBeInTheDocument();
