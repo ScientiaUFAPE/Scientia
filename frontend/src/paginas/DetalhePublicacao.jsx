@@ -129,17 +129,17 @@ export function DetalhePublicacao() {
       ) : (
         <ul className="lista-acervo">
           {relacionadas.map((relacionada) => (
-            <li key={relacionada.id} className="cartao cartao-acervo">
-              <div className="cartao-acervo__topo">
-                <span className="etiqueta etiqueta--tipo">
-                  {ROTULOS_TIPO[relacionada.tipo] ?? relacionada.tipo}
-                </span>
-                <span className="cartao-acervo__ano">{relacionada.ano}</span>
+            <li key={relacionada.id} className="linha-acervo linha-acervo--navega linha-acervo--dupla">
+              <div className="linha-acervo__corpo">
+                <Link className="linha-acervo__titulo linha-acervo__alvo" to={`/publicacoes/${relacionada.id}`}>
+                  {relacionada.titulo}
+                </Link>
+                <span className="linha-acervo__resumo">{nomesDosAutores(relacionada.autores)}</span>
               </div>
-              <h3 className="cartao-acervo__titulo">
-                <Link to={`/publicacoes/${relacionada.id}`}>{relacionada.titulo}</Link>
-              </h3>
-              <p className="cartao-acervo__autores">{nomesDosAutores(relacionada.autores)}</p>
+              <span className="linha-acervo__tipo">
+                {ROTULOS_TIPO[relacionada.tipo] ?? relacionada.tipo}
+              </span>
+              <span className="linha-acervo__ano">{relacionada.ano}</span>
             </li>
           ))}
         </ul>
