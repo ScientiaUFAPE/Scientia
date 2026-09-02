@@ -300,12 +300,13 @@ export function Publicacoes({ idPesquisadorFixo }) {
             <>
               {selecionada.doi && (
                 <a
-                  className="botao botao--discreto botao--compacto"
+                  className="botao botao--discreto painel-rapido__doi"
                   href={`https://doi.org/${selecionada.doi}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  DOI: {selecionada.doi}
+                  {selecionada.doi}
+                  <IconeLinkExterno />
                 </a>
               )}
 
@@ -428,7 +429,7 @@ function fatosDaPublicacao(publicacao) {
       valor: ordenarAutores(publicacao.autores).map((autor) => (
         <span className="autor-linha" key={autor.id ?? autor.nome}>
           <span className="avatar">{iniciaisDoNome(autor.nome)}</span>
-          {autor.nome}
+          {autor.id ? <Link to={`/pesquisadores/${autor.id}`}>{autor.nome}</Link> : autor.nome}
         </span>
       )),
     },

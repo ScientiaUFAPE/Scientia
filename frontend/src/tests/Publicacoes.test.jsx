@@ -96,6 +96,10 @@ describe('Tela de publicações', () => {
       '/publicacoes/1',
     );
     expect(within(painel).getByText('Revista Brasileira de Computação')).toBeInTheDocument();
+    expect(within(painel).getByRole('link', { name: 'Ana Souza' })).toHaveAttribute(
+      'href',
+      '/pesquisadores/91',
+    );
     expect(
       within(painel).getByRole('link', { name: 'Inteligência artificial aplicada ao Agreste' }),
     ).toHaveAttribute('href', '/projetos/3');

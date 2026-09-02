@@ -90,6 +90,14 @@
   width: 100%;
 }
 
+.painel-rapido__doi {
+  font-variant-numeric: tabular-nums;
+}
+
+.painel-rapido__doi svg {
+  color: var(--mudo);
+}
+
 @media (min-width: 1440px) {
   .painel-rapido__scrim {
     display: none;

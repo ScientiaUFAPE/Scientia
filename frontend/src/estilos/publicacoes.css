@@ -298,6 +298,14 @@ button.linha-acervo:hover,
   box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px var(--teal);
 }
 
+.autor-linha a {
+  text-underline-offset: 3px;
+}
+
+.autor-linha a:hover {
+  text-decoration: underline;
+}
+
 .cabecalho-acervo {
   display: flex;
   align-items: baseline;
