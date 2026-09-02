@@ -184,6 +184,12 @@
   font-variant-numeric: tabular-nums;
 }
 
+.grupo-ano__fio {
+  flex: 1;
+  height: 1px;
+  background-color: var(--fio);
+}
+
 .linha-acervo {
   display: flex;
   align-items: center;
@@ -292,20 +298,43 @@ button.linha-acervo:hover,
   box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px var(--teal);
 }
 
-.filtros-acervo--triplo {
-  grid-template-columns: minmax(9rem, 1fr) minmax(7rem, 1fr) minmax(6rem, 1fr) auto;
+.cabecalho-acervo {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.cabecalho-acervo .pagina__titulo {
+  margin-bottom: 0;
+}
+
+.cabecalho-acervo__resumo {
+  font-size: 13px;
+  color: var(--mudo-forte);
+  font-variant-numeric: tabular-nums;
 }
 
 .busca-alta {
   display: flex;
   align-items: center;
   gap: 11px;
-  height: 62px;
+  height: 56px;
   padding: 0 18px;
   border: 1px solid var(--fio);
   border-radius: var(--raio);
   color: var(--mudo);
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+}
+
+.busca-alta__atalho {
+  flex: none;
+  font-size: 11px;
+  color: var(--mudo);
+  border: 1px solid var(--fio);
+  border-radius: 6px;
+  padding: 1px 6px;
 }
 
 .busca-alta:focus-within {
@@ -406,4 +435,169 @@ button.linha-acervo:hover,
 .linha-acervo__meta--link:hover {
   color: var(--tinta);
   text-decoration: underline;
+}
+
+/* ---- Filtros em pílulas ---- */
+
+.filtros-pilulas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.filtros-pilulas__fio {
+  width: 1px;
+  height: 20px;
+  background-color: var(--fio);
+  margin: 0 4px;
+}
+
+.filtros-pilulas__resumo {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--mudo);
+  font-variant-numeric: tabular-nums;
+}
+
+.pilula {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--fio);
+  border-radius: 999px;
+  background-color: var(--canvas);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mudo-forte);
+  cursor: pointer;
+}
+
+button.pilula:hover {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.pilula[aria-pressed='true'] {
+  border-color: #d4d4d8;
+  background-color: #fafafa;
+  color: var(--tinta);
+  font-weight: 600;
+}
+
+.pilula__conta {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mudo);
+  font-variant-numeric: tabular-nums;
+}
+
+.pilula--menu {
+  position: relative;
+  padding-right: 10px;
+}
+
+.pilula--menu:hover,
+.pilula--menu:focus-within {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.pilula__valor {
+  max-width: 9rem;
+  color: var(--tinta);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pilula--menu select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: none;
+  appearance: none;
+  font: inherit;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pilula--menu svg {
+  flex: none;
+  color: var(--mudo-forte);
+}
+
+.pilula--limpar {
+  color: var(--tinta);
+}
+
+/* ---- Linha da publicação ---- */
+
+.linha-publicacao {
+  cursor: pointer;
+}
+
+.linha-publicacao:hover {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.linha-publicacao__corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.linha-publicacao__titulo {
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-underline-offset: 3px;
+}
+
+.linha-publicacao__titulo:hover {
+  text-decoration: underline;
+}
+
+.linha-publicacao__veiculo {
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: var(--mudo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linha-publicacao .linha-acervo__tipo {
+  width: 64px;
+}
+
+.linha-publicacao .pilha-autores {
+  padding-left: 7px;
+}
+
+.linha-publicacao__doi {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--mudo);
+}
+
+.linha-publicacao__doi:hover {
+  background-color: rgba(27, 35, 49, 0.05);
+  color: var(--tinta);
 }
