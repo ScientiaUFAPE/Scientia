@@ -805,14 +805,73 @@ describe('Acervo público', () => {
     assert.strictEqual(resposta.status, 200);
     assert.deepStrictEqual(resposta.body, {
       editais: [
-        { id: 9, nome: 'Apoio a Projetos 02/2024', ano: 2024 },
-        { id: 8, nome: 'Chamada Interna 01/2024', ano: 2024 },
-        { id: 7, nome: 'Edital Universal nº 03/2022', ano: 2022 },
-        { id: 10, nome: 'Edital de Extensão 01/2021', ano: 2021 },
+        { id: 9, nome: 'Apoio a Projetos 02/2024', ano: 2024, totalProjetos: 0, grupos: [], projetos: [] },
+        { id: 8, nome: 'Chamada Interna 01/2024', ano: 2024, totalProjetos: 0, grupos: [], projetos: [] },
+        {
+          id: 7,
+          nome: 'Edital Universal nº 03/2022',
+          ano: 2022,
+          totalProjetos: 1,
+          grupos: [{ id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' }],
+          projetos: [
+            {
+              id: 3,
+              titulo: 'Inteligência artificial aplicada ao Agreste',
+              status: 'em_andamento',
+              grupo: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+            },
+          ],
+        },
+        { id: 10, nome: 'Edital de Extensão 01/2021', ano: 2021, totalProjetos: 0, grupos: [], projetos: [] },
       ],
     });
   });
 
+  it('/api/editais reúne os grupos distintos e ordenados dos projetos vinculados', async () => {
+    await consultar(
+      `
+        INSERT INTO projeto_pesquisa (
+          id_projeto, id_grupo, id_edital, titulo, resumo, data_inicio, data_fim, status, origem
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      `,
+      [
+        5,
+        1,
+        7,
+        'Agroecologia digital no semiárido',
+        'Estuda práticas sustentáveis com apoio de tecnologia.',
+        '2024-06-01',
+        null,
+        'planejado',
+        'manual',
+      ],
+    );
+
+    const resposta = await request(app).get('/api/editais');
+
+    assert.strictEqual(resposta.status, 200);
+    const edital7 = resposta.body.editais.find((edital) => edital.id === 7);
+
+    assert.strictEqual(edital7.totalProjetos, 2);
+    assert.deepStrictEqual(edital7.grupos, [
+      { id: 1, nome: 'Grupo de Pesquisa em Agroecologia Digital' },
+      { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+    ]);
+    assert.deepStrictEqual(
+      edital7.projetos.map((projeto) => projeto.id),
+      [5, 3],
+    );
+  });
+
+  it('/api/editais retorna lista vazia quando não há editais', async () => {
+    await reiniciarCenarioTeste();
+
+    const resposta = await request(app).get('/api/editais');
+
+    assert.strictEqual(resposta.status, 200);
+    assert.deepStrictEqual(resposta.body, { editais: [] });
+  });
 });
 
 describe('Indicadores de produções científicas', () => {

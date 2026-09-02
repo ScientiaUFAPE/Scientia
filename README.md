@@ -307,6 +307,10 @@ A lista de rotas públicas (as que passam sem token) fica centralizada em
 `Authorization: Bearer <token>`, e as marcadas com um tipo específico passam
 ainda pelo `exigeTipo`.
 
+Cada edital de `/api/editais` vem com `totalProjetos` e os `grupos` distintos
+dos projetos vinculados a ele, além da lista `projetos` (id, título, status e
+o grupo responsável), ordenada por data de início mais recente.
+
 ## Integração Contínua e Qualidade
 Nesta iteração o backend ganhou um workflow próprio no GitHub Actions, em
 [.github/workflows/backend.yml](.github/workflows/backend.yml). Ele roda em

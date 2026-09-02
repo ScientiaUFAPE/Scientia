@@ -3,6 +3,9 @@ export function editalResposta(edital) {
     id: edital.id,
     nome: edital.nome,
     ano: edital.ano,
+    totalProjetos: edital.totalProjetos,
+    grupos: edital.grupos,
+    projetos: edital.projetos,
   };
 }
 
