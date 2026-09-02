@@ -39,6 +39,7 @@ export async function listar(filtros) {
 
   return {
     projetos: resultado.itens,
+    resumo: resultado.resumo,
     paginacao: {
       pagina: paginacao.pagina,
       porPagina: paginacao.porPagina,

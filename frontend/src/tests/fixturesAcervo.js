@@ -31,6 +31,14 @@ export const RESPOSTA_PROJETOS = {
     },
   ],
   paginacao: { pagina: 1, porPagina: 20, total: 120 },
+  resumo: {
+    totalProjetos: 120,
+    emAndamento: 60,
+    planejados: 12,
+    concluidos: 36,
+    cancelados: 12,
+    totalGrupos: 55,
+  },
 };
 
 export const RESPOSTA_PROJETO = {

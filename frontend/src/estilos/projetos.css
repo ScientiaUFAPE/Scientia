@@ -21,6 +21,114 @@
   color: var(--erro);
 }
 
+/* Consulta de projetos — referência 1a */
+.linha-projeto {
+  cursor: pointer;
+}
+
+.linha-projeto:hover {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.linha-projeto:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
+
+.linha-projeto__periodo {
+  flex: none;
+  width: 150px;
+  font-size: 13px;
+  color: var(--mudo);
+  font-variant-numeric: tabular-nums;
+}
+
+.linha-projeto__publicacoes {
+  flex: none;
+  width: 104px;
+  text-align: right;
+  font-size: 13px;
+  color: var(--mudo);
+  font-variant-numeric: tabular-nums;
+}
+
+.painel-projeto__resumo {
+  display: block;
+  color: var(--mudo-forte);
+  line-height: 1.5;
+}
+
+.painel-projeto__coordenacao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.painel-projeto__avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+}
+
+.painel-projeto__equipe {
+  color: var(--mudo);
+  font-size: 13px;
+}
+
+.painel-projeto__saidas {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.painel-projeto__saidas a,
+.painel-rapido__fato a {
+  text-underline-offset: 3px;
+}
+
+.painel-projeto__saidas a:hover,
+.painel-rapido__fato a:hover {
+  text-decoration: underline;
+}
+
+.painel-rapido__fato .lista-chips {
+  margin-top: 0.2rem;
+}
+
+@media (max-width: 1180px) {
+  .linha-projeto__periodo {
+    width: 116px;
+  }
+
+  .pagina-projetos .linha-acervo__acoes--gestao {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .linha-projeto {
+    height: auto;
+    min-height: 58px;
+    padding-block: 12px;
+  }
+
+  .linha-projeto__periodo {
+    display: none;
+  }
+
+  .linha-projeto__publicacoes {
+    width: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .linha-projeto__publicacoes {
+    display: none;
+  }
+}
+
 /* Telas de detalhe de projeto e de grupo */
 .detalhe__voltar {
   display: inline-flex;

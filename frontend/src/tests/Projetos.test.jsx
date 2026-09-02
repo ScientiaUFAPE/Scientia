@@ -3,9 +3,11 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Projetos } from '../paginas/Projetos.jsx';
+import * as areaService from '../servicos/areaService.js';
 import * as grupoService from '../servicos/grupoService.js';
 import * as projetoService from '../servicos/projetoService.js';
-import { RESPOSTA_GRUPOS, RESPOSTA_PROJETOS } from './fixturesAcervo.js';
+import * as vagaService from '../servicos/vagaService.js';
+import { RESPOSTA_GRUPOS, RESPOSTA_PROJETO, RESPOSTA_PROJETOS } from './fixturesAcervo.js';
 
 vi.mock('../servicos/projetoService.js', () => ({
   listar: vi.fn(),
@@ -16,6 +18,10 @@ vi.mock('../servicos/grupoService.js', () => ({
   listar: vi.fn(),
   buscarPorId: vi.fn(),
 }));
+
+vi.mock('../servicos/areaService.js', () => ({ listar: vi.fn() }));
+
+vi.mock('../servicos/vagaService.js', () => ({ listar: vi.fn() }));
 
 const sessaoFalsa = { usuario: null };
 
@@ -36,7 +42,10 @@ describe('Tela de projetos de pesquisa', () => {
     sessaoFalsa.usuario = null;
     vi.useFakeTimers();
     projetoService.listar.mockResolvedValue(RESPOSTA_PROJETOS);
+    projetoService.buscarPorId.mockResolvedValue(RESPOSTA_PROJETO);
     grupoService.listar.mockResolvedValue(RESPOSTA_GRUPOS);
+    areaService.listar.mockResolvedValue({ areas: [{ id: 1, nome: 'Ciência da Computação' }] });
+    vagaService.listar.mockResolvedValue({ vagas: [], paginacao: { pagina: 1, porPagina: 1, total: 2 } });
   });
 
   afterEach(() => {
@@ -44,7 +53,7 @@ describe('Tela de projetos de pesquisa', () => {
     vi.clearAllMocks();
   });
 
-  it('mostra o cartão do projeto com situação, grupo, áreas e total de publicações', async () => {
+  it('agrupa o projeto por situação e mostra área, grupo, período e publicações', async () => {
     renderizarTela();
     expect(screen.getByText(/carregando projetos/i)).toBeInTheDocument();
 
@@ -54,8 +63,9 @@ describe('Tela de projetos de pesquisa', () => {
       .getByRole('link', { name: 'Inteligência artificial aplicada ao Agreste' })
       .closest('li');
 
-    expect(within(cartao).getByText('Em andamento')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Em andamento' })).toBeInTheDocument();
     expect(within(cartao).getByText('4 publicações')).toBeInTheDocument();
+    expect(within(cartao).getByText('desde 03/2024')).toBeInTheDocument();
     expect(within(cartao).getByText('CC')).toBeInTheDocument();
     expect(
       within(cartao).getByRole('link', { name: 'Grupo de Pesquisa em Computação Aplicada' }),
@@ -65,17 +75,18 @@ describe('Tela de projetos de pesquisa', () => {
     ).toHaveAttribute('href', '/projetos/3');
   });
 
-  it('escolher a situação chama o serviço com o filtro de status', async () => {
+  it('escolher uma situação chama o serviço com o filtro de status', async () => {
     renderizarTela();
     await act(async () => {});
 
-    fireEvent.change(screen.getByLabelText('Situação'), { target: { value: 'concluido' } });
+    fireEvent.click(screen.getByRole('button', { name: /concluídos 36/i }));
     await act(async () => {});
 
     expect(projetoService.listar).toHaveBeenLastCalledWith({
       busca: '',
       status: 'concluido',
       idGrupo: '',
+      idArea: '',
       pagina: 1,
       porPagina: 20,
     });
@@ -94,6 +105,7 @@ describe('Tela de projetos de pesquisa', () => {
       busca: '',
       status: '',
       idGrupo: '',
+      idArea: '',
       pagina: 2,
       porPagina: 20,
     });
@@ -108,7 +120,7 @@ describe('Tela de projetos de pesquisa', () => {
     const grupo = RESPOSTA_GRUPOS.grupos[0];
 
     expect(
-      within(screen.getByLabelText('Grupo de pesquisa')).getByRole('option', {
+      within(screen.getByLabelText('Grupo')).getByRole('option', {
         name: grupo.nome,
       }),
     ).toBeInTheDocument();
@@ -123,7 +135,7 @@ describe('Tela de projetos de pesquisa', () => {
 
     const grupo = RESPOSTA_GRUPOS.grupos[0];
 
-    fireEvent.change(screen.getByLabelText('Grupo de pesquisa'), {
+    fireEvent.change(screen.getByLabelText('Grupo'), {
       target: { value: String(grupo.id) },
     });
     await act(async () => {});
@@ -132,9 +144,23 @@ describe('Tela de projetos de pesquisa', () => {
       busca: '',
       status: '',
       idGrupo: String(grupo.id),
+      idArea: '',
       pagina: 1,
       porPagina: 20,
     });
+  });
+
+  it('abre o painel rápido com detalhes e saídas do projeto', async () => {
+    renderizarTela();
+    await act(async () => {});
+
+    fireEvent.click(screen.getByRole('button', { name: /inteligência artificial aplicada ao agreste/i }));
+    await act(async () => {});
+
+    expect(projetoService.buscarPorId).toHaveBeenCalledWith(3);
+    expect(screen.getByText('Estuda a aplicação de aprendizado de máquina...')).toBeInTheDocument();
+    expect(screen.getByText('Ana Souza')).toBeInTheDocument();
+    expect(screen.getByText('2 vagas abertas')).toBeInTheDocument();
   });
 
   it('sem sessão ou com conta de aluno, não oferece o atalho de cadastro', async () => {
