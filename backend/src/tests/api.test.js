@@ -805,26 +805,51 @@ describe('Acervo público', () => {
     assert.strictEqual(resposta.status, 200);
     assert.deepStrictEqual(resposta.body, {
       editais: [
-        { id: 9, nome: 'Apoio a Projetos 02/2024', ano: 2024, totalProjetos: 0, grupos: [], projetos: [] },
-        { id: 8, nome: 'Chamada Interna 01/2024', ano: 2024, totalProjetos: 0, grupos: [], projetos: [] },
+        { id: 9, nome: 'Apoio a Projetos 02/2024', ano: 2024, totalProjetos: 0, grupos: [] },
+        { id: 8, nome: 'Chamada Interna 01/2024', ano: 2024, totalProjetos: 0, grupos: [] },
         {
           id: 7,
           nome: 'Edital Universal nº 03/2022',
           ano: 2022,
           totalProjetos: 1,
           grupos: [{ id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' }],
-          projetos: [
-            {
-              id: 3,
-              titulo: 'Inteligência artificial aplicada ao Agreste',
-              status: 'em_andamento',
-              grupo: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
-            },
-          ],
         },
-        { id: 10, nome: 'Edital de Extensão 01/2021', ano: 2021, totalProjetos: 0, grupos: [], projetos: [] },
+        { id: 10, nome: 'Edital de Extensão 01/2021', ano: 2021, totalProjetos: 0, grupos: [] },
       ],
     });
+  });
+
+  it('/api/editais inclui os projetos vinculados ao informar comProjetos=1', async () => {
+    await consultar('INSERT INTO edital (id_edital, nome_edital, ano) VALUES ($1, $2, $3)', [
+      8,
+      'Chamada Interna 01/2024',
+      2024,
+    ]);
+
+    const resposta = await request(app).get('/api/editais?comProjetos=1');
+
+    assert.strictEqual(resposta.status, 200);
+    const edital7 = resposta.body.editais.find((edital) => edital.id === 7);
+    const edital8 = resposta.body.editais.find((edital) => edital.id === 8);
+
+    assert.deepStrictEqual(edital7.projetos, [
+      {
+        id: 3,
+        titulo: 'Inteligência artificial aplicada ao Agreste',
+        status: 'em_andamento',
+        grupo: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+      },
+    ]);
+    assert.strictEqual(edital8.totalProjetos, 0);
+    assert.deepStrictEqual(edital8.grupos, []);
+    assert.deepStrictEqual(edital8.projetos, []);
+  });
+
+  it('/api/editais valida o parâmetro comProjetos', async () => {
+    const resposta = await request(app).get('/api/editais?comProjetos=abc');
+
+    assert.strictEqual(resposta.status, 400);
+    assert.strictEqual(resposta.body.mensagem, 'O parâmetro comProjetos deve ser 1 ou true.');
   });
 
   it('/api/editais reúne os grupos distintos e ordenados dos projetos vinculados', async () => {
@@ -833,7 +858,9 @@ describe('Acervo público', () => {
         INSERT INTO projeto_pesquisa (
           id_projeto, id_grupo, id_edital, titulo, resumo, data_inicio, data_fim, status, origem
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        VALUES
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9),
+          ($10, $11, $12, $13, $14, $15, $16, $17, $18)
       `,
       [
         5,
@@ -845,22 +872,31 @@ describe('Acervo público', () => {
         null,
         'planejado',
         'manual',
+        6,
+        1,
+        7,
+        'Monitoramento de solo com sensores de baixo custo',
+        'Aplica sensores IoT para monitorar a umidade do solo.',
+        '2024-07-01',
+        null,
+        'planejado',
+        'manual',
       ],
     );
 
-    const resposta = await request(app).get('/api/editais');
+    const resposta = await request(app).get('/api/editais?comProjetos=1');
 
     assert.strictEqual(resposta.status, 200);
     const edital7 = resposta.body.editais.find((edital) => edital.id === 7);
 
-    assert.strictEqual(edital7.totalProjetos, 2);
+    assert.strictEqual(edital7.totalProjetos, 3);
     assert.deepStrictEqual(edital7.grupos, [
       { id: 1, nome: 'Grupo de Pesquisa em Agroecologia Digital' },
       { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
     ]);
     assert.deepStrictEqual(
       edital7.projetos.map((projeto) => projeto.id),
-      [5, 3],
+      [6, 5, 3],
     );
   });
 
@@ -868,9 +904,12 @@ describe('Acervo público', () => {
     await reiniciarCenarioTeste();
 
     const resposta = await request(app).get('/api/editais');
+    const respostaComProjetos = await request(app).get('/api/editais?comProjetos=1');
 
     assert.strictEqual(resposta.status, 200);
     assert.deepStrictEqual(resposta.body, { editais: [] });
+    assert.strictEqual(respostaComProjetos.status, 200);
+    assert.deepStrictEqual(respostaComProjetos.body, { editais: [] });
   });
 });
 

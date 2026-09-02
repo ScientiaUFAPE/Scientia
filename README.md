@@ -308,8 +308,10 @@ A lista de rotas públicas (as que passam sem token) fica centralizada em
 ainda pelo `exigeTipo`.
 
 Cada edital de `/api/editais` vem com `totalProjetos` e os `grupos` distintos
-dos projetos vinculados a ele, além da lista `projetos` (id, título, status e
-o grupo responsável), ordenada por data de início mais recente.
+dos projetos vinculados a ele. A lista `projetos` (id, título, status e o
+grupo responsável, ordenada por data de início mais recente) só entra na
+resposta com `?comProjetos=1` (ou `?comProjetos=true`); qualquer outro valor
+do parâmetro é rejeitado com 400.
 
 ## Integração Contínua e Qualidade
 Nesta iteração o backend ganhou um workflow próprio no GitHub Actions, em
