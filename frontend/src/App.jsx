@@ -10,6 +10,7 @@ import { Conta } from './paginas/Conta.jsx';
 import { DetalheGrupo } from './paginas/DetalheGrupo.jsx';
 import { DetalheProjeto } from './paginas/DetalheProjeto.jsx';
 import { DetalhePublicacao } from './paginas/DetalhePublicacao.jsx';
+import { Editais } from './paginas/Editais.jsx';
 import { EditarProjeto } from './paginas/EditarProjeto.jsx';
 import { EditarPublicacao } from './paginas/EditarPublicacao.jsx';
 import { Grupos } from './paginas/Grupos.jsx';
@@ -43,6 +44,7 @@ export function App() {
         <Route path="/pesquisadores" element={<Pesquisadores />} />
         <Route path="/pesquisadores/:id" element={<PerfilPesquisador />} />
         <Route path="/vagas" element={<Vagas />} />
+        <Route path="/editais" element={<Editais />} />
         <Route path="/relatorios" element={<Relatorios />} />
       </Route>
 

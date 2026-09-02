@@ -251,6 +251,16 @@ button.linha-acervo:hover,
   font-variant-numeric: tabular-nums;
 }
 
+.linha-acervo__grupo {
+  flex: none;
+  max-width: 15rem;
+  font-size: 13px;
+  color: var(--mudo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .pilha-autores {
   display: flex;
   flex: none;

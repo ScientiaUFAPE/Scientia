@@ -65,7 +65,47 @@ export const RESPOSTA_GRUPOS = {
 };
 
 export const RESPOSTA_EDITAIS = {
-  editais: [{ id: 7, nome: 'Edital Universal nº 03/2022', ano: 2022 }],
+  editais: [
+    {
+      id: 7,
+      nome: 'Edital Universal nº 03/2022',
+      ano: 2022,
+      totalProjetos: 2,
+      grupos: [
+        { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+        { id: 4, nome: 'Núcleo de Redes' },
+      ],
+      projetos: [
+        {
+          id: 3,
+          titulo: 'Inteligência artificial aplicada ao Agreste',
+          status: 'em_andamento',
+          grupo: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+        },
+        {
+          id: 8,
+          titulo: 'Monitoramento de redes sem fio no campus',
+          status: 'concluido',
+          grupo: { id: 4, nome: 'Núcleo de Redes' },
+        },
+      ],
+    },
+    {
+      id: 11,
+      nome: 'Edital PIBIC 2026',
+      ano: 2026,
+      totalProjetos: 1,
+      grupos: [{ id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' }],
+      projetos: [
+        {
+          id: 12,
+          titulo: 'Painel de dados abertos da UFAPE',
+          status: 'planejado',
+          grupo: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+        },
+      ],
+    },
+  ],
 };
 
 export const RESPOSTA_GRUPO = {

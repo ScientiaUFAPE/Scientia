@@ -1,5 +1,5 @@
-import { requisitar } from './api.js';
+import { montarConsulta, requisitar } from './api.js';
 
-export function listar() {
-  return requisitar('/editais');
+export function listar(filtros) {
+  return requisitar(`/editais${montarConsulta(filtros)}`);
 }
