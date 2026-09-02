@@ -51,24 +51,22 @@
   color: var(--mudo-forte);
 }
 
-.secao__topo--agora {
-  flex-wrap: wrap;
+.secao__topo--compacto {
+  padding-bottom: 4px;
 }
 
 .secao__acoes {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: flex-end;
-  column-gap: 16px;
-  row-gap: 4px;
+  align-items: center;
+  gap: 16px;
   margin-left: auto;
+  font-size: 13px;
 }
 
 .secao__resumo {
-  margin-left: 0;
+  margin: 0 0 14px;
+  font-size: 13px;
   color: var(--mudo);
-  white-space: nowrap;
 }
 
 .secao__vazio {

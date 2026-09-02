@@ -98,7 +98,7 @@ export function VisaoGeral({ dataAtual = new Date() }) {
       )}
 
       <div className="colunas">
-        <Recentes publicacoes={recentes} />
+        <Recentes publicacoes={recentes} totalProducoes={indicadores?.totalProducoes} />
         <Agora
           vagas={vagas}
           totalVagas={totalVagas}
@@ -249,17 +249,21 @@ function Apoio({ indicadores }) {
   );
 }
 
-function Recentes({ publicacoes }) {
+function Recentes({ publicacoes, totalProducoes }) {
   const recentes = publicacoes.slice(0, 5);
 
   return (
     <section>
-      <div className="secao__topo">
+      <div className="secao__topo secao__topo--compacto">
         <span className="rotulo">Recentes</span>
         <Link className="secao__extra ligacao" to="/publicacoes">
           Ver todas as publicações
         </Link>
       </div>
+
+      {typeof totalProducoes === 'number' && (
+        <p className="secao__resumo">{contarProducoes(totalProducoes)} no acervo</p>
+      )}
 
       {recentes.length === 0 ? (
         <p className="secao__vazio">Nenhuma publicação cadastrada ainda.</p>
@@ -296,14 +300,10 @@ function Agora({ vagas, totalVagas, editais, anoAtual }) {
 
   return (
     <section>
-      <div className="secao__topo secao__topo--agora">
+      <div className="secao__topo secao__topo--compacto">
         <span className="ponto-acento" />
         <span className="rotulo">Agora</span>
         <div className="secao__acoes">
-          <span className="secao__extra secao__resumo">
-            {contarVagas(totalVagas)} {totalVagas === 1 ? 'aberta' : 'abertas'} ·{' '}
-            {contarEditais(editais.length)} de {anoAtual}
-          </span>
           <Link className="ligacao" to="/vagas">
             Ver todas as vagas
           </Link>
@@ -312,6 +312,11 @@ function Agora({ vagas, totalVagas, editais, anoAtual }) {
           </Link>
         </div>
       </div>
+
+      <p className="secao__resumo">
+        {contarVagas(totalVagas)} {totalVagas === 1 ? 'aberta' : 'abertas'} ·{' '}
+        {contarEditais(editais.length)} de {anoAtual}
+      </p>
 
       {vazio ? (
         <p className="secao__vazio">Nenhuma vaga aberta nem edital deste ano.</p>
@@ -357,6 +362,10 @@ function anoDePico(porAno) {
 
     return item.quantidade === pico.quantidade && item.ano > pico.ano ? item : pico;
   }, null);
+}
+
+function contarProducoes(total) {
+  return `${total} ${total === 1 ? 'produção' : 'produções'}`;
 }
 
 function contarVagas(total) {

@@ -235,6 +235,7 @@ describe('Visão geral', () => {
       'href',
       '/publicacoes',
     );
+    expect(screen.getByText('4 produções no acervo')).toBeInTheDocument();
   });
 
   it('limita as recentes a cinco mesmo que o serviço devolva mais publicações', async () => {
