@@ -248,15 +248,40 @@ parte do sistema estão em [docs/historias-de-usuario.md](docs/historias-de-usua
 
 ## Acervo Científico
 A consulta ao acervo — publicações, projetos de pesquisa, grupos de pesquisa,
-pesquisadores, vagas e relatórios — é pública: qualquer visitante navega sem
-login. Criar, atualizar ou excluir publicações, projetos, grupos e vagas exige
-conta do tipo `pesquisador` ou `admin`. Candidaturas são protegidas e seguem as
-permissões específicas de aluno, pesquisador e administrador.
+pesquisadores, vagas, editais e relatórios — é pública: qualquer visitante
+navega sem login. Criar, atualizar ou excluir publicações, projetos, grupos e
+vagas exige conta do tipo `pesquisador` ou `admin`. Candidaturas são
+protegidas e seguem as permissões específicas de aluno, pesquisador e
+administrador.
 
 Essa é a mesma regra que guia o modelo do banco: navegar na vitrine é público
 e agir exige login. Por isso o login fica numa tabela `conta` separada, e não
 dentro de `pesquisador` ou `aluno` — um pesquisador puxado de fonte externa
 precisa aparecer na vitrine mesmo sem nunca ter criado conta.
+
+### Página inicial
+
+A rota `/` é a Visão geral, pública, e reúne o panorama do acervo: total de
+produções e período coberto, áreas de pesquisa em destaque, ranking de
+produções por área, séries por ano e por tipo de produção, publicações
+recentes, vagas abertas e editais do ano corrente. Dali sai um atalho para os
+Relatórios completos, que seguem em `/relatorios`.
+
+### Navegação do frontend
+
+O menu lateral organiza as telas em grupos: Visão geral; Explorar
+(Publicações, Projetos, Grupos, Pesquisadores); Participar (Vagas, Editais e,
+só com sessão aberta, Minhas candidaturas). No rodapé ficam o atalho para a
+Conta (`/conta`) e, para quem está logado como `admin`, o link para Usuários.
+
+As listas de publicações, pesquisadores e editais abrem um painel de olhar
+rápido ao clicar num item, com os principais dados sem sair da lista; quando
+existe página de detalhe, o painel traz o atalho "Abrir página completa".
+
+`/pesquisadores` e `/editais` são listas públicas. `/conta` reúne os dados da
+sessão e os atalhos de cadastro do perfil logado, e exige login. As rotas
+antigas `/indicadores` e `/painel` continuam existindo como redirecionamento,
+para `/` e `/conta` respectivamente.
 
 ### Endpoints da API
 
