@@ -26,7 +26,7 @@ const Icone = {
   ),
   relatorios: <><path d="M4 20V10" /><path d="M10 20V4" /><path d="M16 20v-7" /><path d="M22 20H2" /></>,
   visao: <><circle cx="12" cy="12" r="9" /><path d="M15.6 8.4 13.4 13.4 8.4 15.6l2.2-5Z" /></>,
-  painel: <><rect x="3" y="4" width="18" height="16" rx="2.5" /><path d="M7 9h10M7 13h6" /></>,
+  conta: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="9.5" r="3.2" /><path d="M6.5 19c0.6-2.6 2.8-4 5.5-4s4.9 1.4 5.5 4" /></>,
   candidaturas: (
     <>
       <path d="M4 7h16" />
@@ -84,7 +84,7 @@ export const ROTULOS_ROTA = {
   '/grupos': ['Grupos', 'grupos'],
   '/vagas': ['Vagas', 'vagas'],
   '/relatorios': ['Relatórios', 'relatorios'],
-  '/painel': ['Painel', 'painel'],
+  '/conta': ['Conta', 'conta'],
   '/candidaturas': ['Candidaturas', 'candidaturas'],
   '/usuarios': ['Usuários', 'usuarios'],
   '/pesquisadores': ['Pesquisadores', 'grupos'],
@@ -125,7 +125,7 @@ export function BarraLateral() {
   const containerMais = useRef(null);
 
   const menuExtra = [
-    usuario && { para: '/painel', rotulo: 'Painel', icone: 'painel' },
+    usuario && { para: '/conta', rotulo: 'Conta', icone: 'conta' },
     usuario && { para: '/candidaturas', rotulo: 'Candidaturas', icone: 'candidaturas' },
     usuario?.tipo === 'admin' && { para: '/usuarios', rotulo: 'Usuários', icone: 'usuarios' },
   ].filter(Boolean);

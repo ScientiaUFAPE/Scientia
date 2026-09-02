@@ -15,7 +15,7 @@ export function Login() {
   const [enviando, setEnviando] = useState(false);
 
   if (usuario) {
-    return <Navigate to="/painel" replace />;
+    return <Navigate to="/" replace />;
   }
 
   async function enviar(evento) {
@@ -26,7 +26,7 @@ export function Login() {
     try {
       await entrar(email, senha);
       // Se o guard interrompeu o caminho do usuário, devolvemos ele para lá.
-      navegar(local.state?.destino ?? '/painel', { replace: true });
+      navegar(local.state?.destino ?? '/', { replace: true });
     } catch (falha) {
       setErro(falha.message);
       setEnviando(false);

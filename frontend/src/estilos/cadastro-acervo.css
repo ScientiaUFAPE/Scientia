@@ -223,14 +223,14 @@
   font-weight: 600;
 }
 
-.painel__atalhos {
+.conta__atalhos {
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
   margin-top: 1rem;
 }
 
-.painel__atalhos .botao--discreto:hover {
+.conta__atalhos .botao--discreto:hover {
   border-color: var(--tinta);
   color: var(--tinta);
 }

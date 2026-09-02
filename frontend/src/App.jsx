@@ -6,6 +6,7 @@ import { Cadastro } from './paginas/Cadastro.jsx';
 import { CadastroProjeto } from './paginas/CadastroProjeto.jsx';
 import { CadastroPublicacao } from './paginas/CadastroPublicacao.jsx';
 import { Candidaturas } from './paginas/Candidaturas.jsx';
+import { Conta } from './paginas/Conta.jsx';
 import { DetalheGrupo } from './paginas/DetalheGrupo.jsx';
 import { DetalheProjeto } from './paginas/DetalheProjeto.jsx';
 import { DetalhePublicacao } from './paginas/DetalhePublicacao.jsx';
@@ -15,7 +16,6 @@ import { Grupos } from './paginas/Grupos.jsx';
 import { FormularioGrupo } from './paginas/FormularioGrupo.jsx';
 import { FormularioVaga } from './paginas/FormularioVaga.jsx';
 import { Login } from './paginas/Login.jsx';
-import { Painel } from './paginas/Painel.jsx';
 import { PerfilPesquisador } from './paginas/PerfilPesquisador.jsx';
 import { Projetos } from './paginas/Projetos.jsx';
 import { Publicacoes } from './paginas/Publicacoes.jsx';
@@ -48,7 +48,8 @@ export function App() {
           tipo admin, com um segundo guard por dentro. */}
       <Route element={<RotaProtegida />}>
         <Route element={<Layout />}>
-          <Route path="/painel" element={<Painel />} />
+          <Route path="/conta" element={<Conta />} />
+          <Route path="/painel" element={<Navigate to="/conta" replace />} />
           <Route path="/sem-permissao" element={<SemPermissao />} />
           <Route path="/candidaturas" element={<Candidaturas />} />
           <Route path="/publicacoes/:id" element={<DetalhePublicacao />} />

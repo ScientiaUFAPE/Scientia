@@ -43,7 +43,7 @@ describe('Barra lateral do hub', () => {
     expect(screen.queryByRole('button', { name: 'Mais' })).not.toBeInTheDocument();
   });
 
-  it('com sessão de admin, o "Mais" guarda painel, candidaturas e usuários', () => {
+  it('com sessão de admin, o "Mais" guarda conta, candidaturas e usuários', () => {
     sessaoFalsa.usuario = { id: 1, nome: 'Ana Souza', email: 'ana@ufape.edu.br', tipo: 'admin' };
 
     renderizarBarra();
@@ -51,11 +51,11 @@ describe('Barra lateral do hub', () => {
     expect(screen.getByText('Ana Souza')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sair/i })).toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Entrar' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /Painel/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Conta/ })).not.toBeInTheDocument();
 
     abrirMais();
 
-    expect(screen.getByRole('link', { name: /Painel/ })).toHaveAttribute('href', '/painel');
+    expect(screen.getByRole('link', { name: /Conta/ })).toHaveAttribute('href', '/conta');
     expect(screen.getByRole('link', { name: /Usuários/ })).toHaveAttribute('href', '/usuarios');
     expect(screen.getByRole('link', { name: /Candidaturas/ })).toHaveAttribute(
       'href',
@@ -70,7 +70,7 @@ describe('Barra lateral do hub', () => {
     abrirMais();
 
     expect(screen.queryByRole('link', { name: /Usuários/ })).not.toBeInTheDocument();
-    expect(screen.getByRole('link', { name: /Painel/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Conta/ })).toBeInTheDocument();
   });
 
   it('fixar promove o item para o menu e desafixar devolve para o "Mais"', () => {
@@ -79,16 +79,16 @@ describe('Barra lateral do hub', () => {
     renderizarBarra();
     abrirMais();
 
-    const linkPainel = screen.getByRole('link', { name: /Painel/ });
-    fireEvent.click(within(linkPainel).getByRole('button', { name: 'Fixar no menu' }));
+    const linkConta = screen.getByRole('link', { name: /Conta/ });
+    fireEvent.click(within(linkConta).getByRole('button', { name: 'Fixar no menu' }));
 
-    expect(JSON.parse(localStorage.getItem('scientia:itens-fixados'))).toContain('/painel');
-    expect(screen.getAllByRole('link', { name: /Painel/ })).toHaveLength(2);
+    expect(JSON.parse(localStorage.getItem('scientia:itens-fixados'))).toContain('/conta');
+    expect(screen.getAllByRole('link', { name: /Conta/ })).toHaveLength(2);
 
     fireEvent.click(screen.getByRole('button', { name: 'Desafixar do menu' }));
 
     expect(JSON.parse(localStorage.getItem('scientia:itens-fixados'))).toEqual([]);
-    expect(screen.getAllByRole('link', { name: /Painel/ })).toHaveLength(1);
+    expect(screen.getAllByRole('link', { name: /Conta/ })).toHaveLength(1);
   });
 
   it.each(['pesquisador', 'admin'])('a conta %s ganha o atalho de cadastro', (tipo) => {

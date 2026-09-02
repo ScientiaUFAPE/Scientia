@@ -34,7 +34,7 @@ export function Cadastro() {
   }, []);
 
   if (usuario) {
-    return <Navigate to="/painel" replace />;
+    return <Navigate to="/" replace />;
   }
 
   function alterar(evento) {
@@ -68,7 +68,7 @@ export function Cadastro() {
 
     try {
       await registrar(dadosDoCadastro);
-      navegar('/painel', { replace: true });
+      navegar('/', { replace: true });
     } catch (falha) {
       setErro(falha.message);
       setEnviando(false);
