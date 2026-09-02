@@ -31,6 +31,7 @@ describe('Barra lateral do hub', () => {
   it('sem sessão, mostra os links do acervo e o convite para entrar', () => {
     renderizarBarra();
 
+    expect(screen.getByRole('link', { name: 'Visão geral' })).toHaveAttribute('href', '/');
     expect(screen.getByRole('link', { name: 'Publicações' })).toHaveAttribute(
       'href',
       '/publicacoes',
@@ -40,7 +41,6 @@ describe('Barra lateral do hub', () => {
     expect(screen.getByRole('link', { name: 'Entrar' })).toHaveAttribute('href', '/login');
     expect(screen.queryByRole('button', { name: /sair/i })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Mais' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: /Indicadores/ })).not.toBeInTheDocument();
   });
 
   it('com sessão de admin, o "Mais" guarda painel, candidaturas e usuários', () => {
@@ -60,10 +60,6 @@ describe('Barra lateral do hub', () => {
     expect(screen.getByRole('link', { name: /Candidaturas/ })).toHaveAttribute(
       'href',
       '/candidaturas',
-    );
-    expect(screen.getByRole('link', { name: /Indicadores/ })).toHaveAttribute(
-      'href',
-      '/indicadores',
     );
   });
 

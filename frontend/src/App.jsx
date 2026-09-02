@@ -12,7 +12,6 @@ import { DetalhePublicacao } from './paginas/DetalhePublicacao.jsx';
 import { EditarProjeto } from './paginas/EditarProjeto.jsx';
 import { EditarPublicacao } from './paginas/EditarPublicacao.jsx';
 import { Grupos } from './paginas/Grupos.jsx';
-import { IndicadoresProducoes } from './paginas/IndicadoresProducoes.jsx';
 import { FormularioGrupo } from './paginas/FormularioGrupo.jsx';
 import { FormularioVaga } from './paginas/FormularioVaga.jsx';
 import { Login } from './paginas/Login.jsx';
@@ -24,6 +23,7 @@ import { Relatorios } from './paginas/Relatorios.jsx';
 import { SemPermissao } from './paginas/SemPermissao.jsx';
 import { Usuarios } from './paginas/Usuarios.jsx';
 import { Vagas } from './paginas/Vagas.jsx';
+import { VisaoGeral } from './paginas/VisaoGeral.jsx';
 
 export function App() {
   return (
@@ -32,6 +32,8 @@ export function App() {
       <Route path="/cadastro" element={<Cadastro />} />
 
       <Route element={<Layout />}>
+        <Route path="/" element={<VisaoGeral />} />
+        <Route path="/indicadores" element={<Navigate to="/" replace />} />
         <Route path="/publicacoes" element={<Publicacoes />} />
         <Route path="/projetos" element={<Projetos />} />
         <Route path="/projetos/:id" element={<DetalheProjeto />} />
@@ -49,7 +51,6 @@ export function App() {
           <Route path="/painel" element={<Painel />} />
           <Route path="/sem-permissao" element={<SemPermissao />} />
           <Route path="/candidaturas" element={<Candidaturas />} />
-          <Route path="/indicadores" element={<IndicadoresProducoes />} />
           <Route path="/publicacoes/:id" element={<DetalhePublicacao />} />
 
           <Route element={<RotaProtegida tipos={['pesquisador', 'admin']} />}>
@@ -69,7 +70,7 @@ export function App() {
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to="/publicacoes" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }

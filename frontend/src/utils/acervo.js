@@ -111,3 +111,28 @@ export function saudacao(hora = new Date().getHours()) {
 
   return hora < 18 ? 'Boa tarde' : 'Boa noite';
 }
+
+export function periodoDosAnos(porAno = []) {
+  const anos = porAno.map((item) => item.ano);
+
+  if (anos.length === 0) {
+    return '';
+  }
+
+  const primeiro = Math.min(...anos);
+  const ultimo = Math.max(...anos);
+
+  return primeiro === ultimo ? String(primeiro) : `${primeiro}–${ultimo}`;
+}
+
+export function percentualRelativo(quantidade, maior) {
+  return maior > 0 ? Math.round((quantidade / maior) * 100) : 0;
+}
+
+export function juntarNomes(nomes = []) {
+  if (nomes.length < 2) {
+    return nomes[0] ?? '';
+  }
+
+  return `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`;
+}

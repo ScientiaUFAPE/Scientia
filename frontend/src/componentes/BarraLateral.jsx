@@ -25,7 +25,7 @@ const Icone = {
     </>
   ),
   relatorios: <><path d="M4 20V10" /><path d="M10 20V4" /><path d="M16 20v-7" /><path d="M22 20H2" /></>,
-  indicadores: <><path d="M6 20v-6" /><path d="M12 20V8" /><path d="M18 20v-3" /><path d="M22 20H2" /></>,
+  visao: <><circle cx="12" cy="12" r="9" /><path d="M15.6 8.4 13.4 13.4 8.4 15.6l2.2-5Z" /></>,
   painel: <><rect x="3" y="4" width="18" height="16" rx="2.5" /><path d="M7 9h10M7 13h6" /></>,
   candidaturas: (
     <>
@@ -78,12 +78,12 @@ function Alfinete({ fixado }) {
 }
 
 export const ROTULOS_ROTA = {
+  '/': ['Visão geral', 'visao'],
   '/publicacoes': ['Publicações', 'publicacoes'],
   '/projetos': ['Projetos', 'projetos'],
   '/grupos': ['Grupos', 'grupos'],
   '/vagas': ['Vagas', 'vagas'],
   '/relatorios': ['Relatórios', 'relatorios'],
-  '/indicadores': ['Indicadores', 'indicadores'],
   '/painel': ['Painel', 'painel'],
   '/candidaturas': ['Candidaturas', 'candidaturas'],
   '/usuarios': ['Usuários', 'usuarios'],
@@ -91,6 +91,7 @@ export const ROTULOS_ROTA = {
 };
 
 const MENU_FIXO = [
+  { para: '/', rotulo: 'Visão geral', icone: 'visao' },
   { para: '/publicacoes', rotulo: 'Publicações', icone: 'publicacoes' },
   { para: '/projetos', rotulo: 'Projetos', icone: 'projetos' },
   { para: '/grupos', rotulo: 'Grupos', icone: 'grupos' },
@@ -124,7 +125,6 @@ export function BarraLateral() {
   const containerMais = useRef(null);
 
   const menuExtra = [
-    usuario && { para: '/indicadores', rotulo: 'Indicadores', icone: 'indicadores' },
     usuario && { para: '/painel', rotulo: 'Painel', icone: 'painel' },
     usuario && { para: '/candidaturas', rotulo: 'Candidaturas', icone: 'candidaturas' },
     usuario?.tipo === 'admin' && { para: '/usuarios', rotulo: 'Usuários', icone: 'usuarios' },
@@ -164,7 +164,7 @@ export function BarraLateral() {
 
   return (
     <aside className="rail">
-      <Link to="/publicacoes" className="rail__marca">
+      <Link to="/" className="rail__marca">
         <img className="rail__simbolo" src={simbolo} alt="" />
         <span className="rail__nome">Scientia</span>
       </Link>
@@ -185,7 +185,7 @@ export function BarraLateral() {
 
       <nav className="rail__menu">
         {[...MENU_FIXO, ...promovidos].map((item) => (
-          <NavLink key={item.para} to={item.para}>
+          <NavLink key={item.para} to={item.para} end={item.para === '/'}>
             <Glifo nome={item.icone} />
             {item.rotulo}
           </NavLink>

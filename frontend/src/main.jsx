@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { App } from './App.jsx';
 import { AuthProvider } from './contexto/AuthContext.jsx';
 import './estilos/global.css';
-import './estilos/indicadores.css';
+import './estilos/visao-geral.css';
 import './estilos/autenticacao.css';
 import './estilos/painel.css';
 import './estilos/painel-rapido.css';
