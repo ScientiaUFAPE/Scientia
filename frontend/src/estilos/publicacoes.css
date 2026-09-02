@@ -11,11 +11,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.3rem 0.75rem;
-  background-color: rgba(31, 75, 142, 0.1);
-  color: var(--primaria);
+  padding: 0.15rem 0.6rem;
+  border: 1px solid var(--fio);
+  color: var(--mudo-forte);
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 12px;
 }
 
 /* Consulta do acervo */
@@ -56,74 +56,17 @@
 }
 
 .lista-acervo {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
-  gap: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.cartao-acervo {
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.cartao-acervo h2,
-.cartao-acervo h3 {
-  margin-bottom: 0;
-}
-
-.cartao-acervo__topo {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.cartao-acervo__ano {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--texto-suave);
-  white-space: nowrap;
-}
-
-.cartao-acervo__titulo {
-  font-size: 1.05rem;
-}
-
-.cartao-acervo__autores {
-  font-size: 0.9rem;
-}
-
-.cartao-acervo__veiculo {
-  font-size: 0.9rem;
-  color: var(--texto-suave);
-  font-style: italic;
-}
-
-.cartao-acervo__vinculo {
-  font-size: 0.9rem;
-  color: var(--texto-suave);
-}
-
-/* Os chips e o link do DOI ficam rentes ao rodapé do card, alinhando os
-   cards vizinhos pela mesma linha de base. */
-.cartao-acervo .lista-chips {
-  margin-top: auto;
-}
-
-.cartao-acervo__link {
-  margin-top: auto;
-  font-weight: 600;
-  font-size: 0.9rem;
-  word-break: break-word;
-}
-
 .etiqueta--tipo {
-  background-color: rgba(31, 75, 142, 0.12);
-  color: var(--primaria);
+  border-color: var(--fio);
+  color: var(--mudo);
 }
 
 .paginacao {
@@ -153,8 +96,6 @@
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-  margin-top: auto;
-  padding-top: 0.5rem;
 }
 
 .tabela-responsiva {
@@ -182,11 +123,9 @@
 }
 
 .tabela-relatorio th {
-  background-color: var(--fundo);
-  color: var(--texto-suave);
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  color: var(--mudo);
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .tabela-relatorio tr:last-child td {
@@ -204,11 +143,722 @@
 }
 
 .etiqueta--aberta {
-  background-color: rgba(15, 157, 143, 0.15);
-  color: #0b6d63;
+  border-color: rgba(9, 208, 201, 0.45);
+  color: #0b7a76;
 }
 
 .etiqueta--fechada {
-  background-color: var(--erro-fundo);
+  border-color: rgba(179, 38, 30, 0.25);
   color: var(--erro);
+}
+
+/* ---- Acervo em linhas, agrupado por ano ---- */
+
+.grupo-ano {
+  margin-bottom: 26px;
+}
+
+.grupo-ano__topo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 4px 10px;
+}
+
+.grupo-ano__ponto {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background-color: var(--teal);
+  flex: none;
+}
+
+.grupo-ano__nome {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.02em;
+}
+
+.grupo-ano__conta {
+  color: var(--mudo);
+  font-variant-numeric: tabular-nums;
+}
+
+.grupo-ano__fio {
+  flex: 1;
+  height: 1px;
+  background-color: var(--fio);
+}
+
+.linha-acervo {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  height: 58px;
+  padding: 0 16px;
+  border: 1px solid var(--fio);
+  border-radius: var(--raio);
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+button.linha-acervo,
+.linha-acervo--navega .linha-acervo__alvo {
+  cursor: pointer;
+}
+
+button.linha-acervo:hover,
+.linha-acervo--navega:hover {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.linha-acervo[aria-current='true'] {
+  border-color: #d4d4d8;
+  background-color: #fafafa;
+}
+
+.linha-acervo__area {
+  flex: none;
+  width: 42px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--mudo);
+}
+
+.linha-acervo__avatar {
+  box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px var(--teal);
+}
+
+.linha-acervo__titulo {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linha-acervo__tipo,
+.linha-acervo__ano {
+  flex: none;
+  font-size: 13px;
+  color: var(--mudo);
+}
+
+.linha-acervo__ano {
+  width: 34px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.linha-acervo__grupo {
+  flex: none;
+  max-width: 15rem;
+  font-size: 13px;
+  color: var(--mudo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pilha-autores {
+  display: flex;
+  flex: none;
+}
+
+.pilha-autores .avatar {
+  width: 25px;
+  height: 25px;
+  font-size: 10px;
+  box-shadow: 0 0 0 2px var(--canvas);
+  margin-left: -7px;
+}
+
+.pilha-autores .avatar:first-child {
+  margin-left: 0;
+}
+
+.autor-linha {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.autor-linha .avatar {
+  width: 24px;
+  height: 24px;
+  font-size: 10px;
+  box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px var(--teal);
+}
+
+.autor-linha a {
+  text-underline-offset: 3px;
+}
+
+.autor-linha a:hover {
+  text-decoration: underline;
+}
+
+.cabecalho-acervo {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.cabecalho-acervo .pagina__titulo {
+  margin-bottom: 0;
+}
+
+.cabecalho-acervo__resumo {
+  font-size: 13px;
+  color: var(--mudo-forte);
+  font-variant-numeric: tabular-nums;
+}
+
+.cabecalho-acervo__acao {
+  margin-left: auto;
+}
+
+.busca-alta {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 56px;
+  padding: 0 18px;
+  border: 1px solid var(--fio);
+  border-radius: var(--raio);
+  color: var(--mudo);
+  margin-bottom: 12px;
+}
+
+.busca-alta__atalho {
+  flex: none;
+  font-size: 11px;
+  color: var(--mudo);
+  border: 1px solid var(--fio);
+  border-radius: 6px;
+  padding: 1px 6px;
+}
+
+.busca-alta:focus-within {
+  border-color: #d4d4d8;
+}
+
+.busca-alta input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 15px;
+  color: var(--tinta);
+  background: transparent;
+}
+
+.busca-alta input::placeholder {
+  color: var(--mudo);
+}
+
+/* Linha que navega: o alvo cobre a linha toda, as ações ficam por cima */
+.linha-acervo--navega {
+  position: relative;
+  cursor: default;
+}
+
+.linha-acervo__alvo {
+  font-weight: 500;
+  color: inherit;
+}
+
+.linha-acervo__alvo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--raio);
+}
+
+.linha-acervo__alvo:hover {
+  text-decoration: none;
+}
+
+.linha-acervo__meta {
+  flex: none;
+  font-size: 13px;
+  color: var(--mudo);
+  white-space: nowrap;
+}
+
+.linha-acervo__acoes {
+  position: relative;
+  flex: none;
+  display: flex;
+  gap: 6px;
+}
+
+.linha-acervo__acoes .botao {
+  height: 30px;
+  padding: 0 0.6rem;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.linha-acervo--dupla {
+  height: auto;
+  align-items: flex-start;
+  padding: 13px 16px;
+}
+
+.linha-acervo--dupla .linha-acervo__corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.linha-acervo--dupla .linha-acervo__resumo {
+  color: var(--mudo);
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.linha-acervo__meta--medida {
+  width: 96px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.linha-acervo__meta--link {
+  position: relative;
+  color: var(--mudo-forte);
+}
+
+.linha-acervo__meta--link:hover {
+  color: var(--tinta);
+  text-decoration: underline;
+}
+
+/* ---- Filtros em pílulas ---- */
+
+.filtros-pilulas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.filtros-pilulas__fio {
+  width: 1px;
+  height: 20px;
+  background-color: var(--fio);
+  margin: 0 4px;
+}
+
+.filtros-pilulas__resumo {
+  margin-left: auto;
+  font-size: 13px;
+  color: var(--mudo);
+  font-variant-numeric: tabular-nums;
+}
+
+.filtros-pilulas__rotulo {
+  margin-right: 2px;
+  font-size: 13px;
+  color: var(--mudo);
+}
+
+.pilula {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--fio);
+  border-radius: 999px;
+  background-color: var(--canvas);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mudo-forte);
+  cursor: pointer;
+}
+
+button.pilula:hover {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.pilula[aria-pressed='true'] {
+  border-color: #d4d4d8;
+  background-color: #fafafa;
+  color: var(--tinta);
+  font-weight: 600;
+}
+
+.pilula__conta {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mudo);
+  font-variant-numeric: tabular-nums;
+}
+
+.pilula--menu {
+  position: relative;
+  padding-right: 10px;
+}
+
+.pilula--menu:hover,
+.pilula--menu:focus-within {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.pilula__valor {
+  max-width: 9rem;
+  color: var(--tinta);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pilula--menu select {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: none;
+  appearance: none;
+  font: inherit;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pilula--menu svg {
+  flex: none;
+  color: var(--mudo-forte);
+}
+
+.pilula--limpar {
+  color: var(--tinta);
+}
+
+/* ---- Linha da publicação ---- */
+
+.linha-publicacao {
+  cursor: pointer;
+}
+
+.linha-publicacao:hover {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.linha-publicacao__corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.linha-publicacao__titulo {
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-underline-offset: 3px;
+}
+
+.linha-publicacao__titulo:hover {
+  text-decoration: underline;
+}
+
+.linha-publicacao__veiculo {
+  font-size: 12.5px;
+  line-height: 1.3;
+  color: var(--mudo);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linha-publicacao .linha-acervo__tipo {
+  width: 64px;
+}
+
+.linha-publicacao .pilha-autores {
+  padding-left: 7px;
+}
+
+.linha-publicacao__doi {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--mudo);
+}
+
+.linha-publicacao__doi:hover {
+  background-color: rgba(27, 35, 49, 0.05);
+  color: var(--tinta);
+}
+
+/* ---- Explorar e participar ---- */
+
+.linha-exploracao__corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.linha-exploracao__titulo {
+  min-width: 0;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-underline-offset: 3px;
+}
+
+a.linha-exploracao__titulo:hover,
+.linha-exploracao__link:hover {
+  color: var(--tinta);
+  text-decoration: underline;
+}
+
+.linha-exploracao__subtitulo {
+  min-width: 0;
+  color: var(--mudo);
+  font-size: 12.5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linha-exploracao__link {
+  color: var(--mudo-forte);
+  text-underline-offset: 3px;
+}
+
+.acao-icone {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--mudo);
+}
+
+.acao-icone:hover {
+  color: var(--tinta);
+  background-color: rgba(27, 35, 49, 0.05);
+}
+
+.linha-grupo__projetos {
+  flex: none;
+  width: 214px;
+  display: grid;
+  grid-template-columns: 120px 84px;
+  align-items: center;
+  gap: 10px;
+  color: var(--mudo);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.barra-progresso {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--preenche);
+}
+
+.barra-progresso > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--acento);
+}
+
+.linha-grupo__membros {
+  flex: none;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mudo);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.linha-grupo__membros .pilha-autores {
+  padding-left: 7px;
+}
+
+.linha-pesquisador,
+.linha-edital {
+  cursor: pointer;
+}
+
+.linha-pesquisador:hover,
+.linha-edital:hover {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.linha-pesquisador__dado,
+.linha-edital__dado,
+.linha-vaga__dado {
+  flex: none;
+  width: 110px;
+  text-align: right;
+  color: var(--mudo);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.linha-edital__dado:last-child,
+.linha-vaga__dado:first-of-type {
+  width: 130px;
+}
+
+.linha-vaga {
+  align-items: center;
+  gap: 13px;
+}
+
+.linha-vaga__quantidade {
+  flex: none;
+  width: 64px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.botao--linha {
+  flex: none;
+  height: 30px;
+  padding: 0 0.6rem;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.linha-acervo__acoes--gestao {
+  z-index: 2;
+}
+
+.link-externo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-underline-offset: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.link-externo:hover {
+  text-decoration: underline;
+}
+
+.painel-lista-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.painel-lista-links a {
+  text-underline-offset: 3px;
+}
+
+.painel-lista-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1180px) {
+  .linha-grupo__projetos {
+    width: 100px;
+    display: block;
+  }
+
+  .linha-grupo__projetos .barra-progresso {
+    display: none;
+  }
+
+  .linha-vaga__dado,
+  .linha-pesquisador__dado:last-of-type,
+  .linha-edital__dado:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .layout__conteudo {
+    padding-top: 32px;
+  }
+
+  .cabecalho-acervo__acao {
+    margin-left: 0;
+  }
+
+  .filtros-pilulas__resumo {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .linha-grupo__membros,
+  .linha-pesquisador__dado,
+  .linha-edital__dado,
+  .linha-vaga__quantidade {
+    display: none;
+  }
+
+  .linha-grupo,
+  .linha-vaga {
+    height: auto;
+    min-height: 58px;
+    flex-wrap: wrap;
+  }
+
+  .linha-acervo__acoes--gestao {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .linha-grupo__projetos {
+    display: none;
+  }
+
+  .linha-vaga .botao--linha,
+  .linha-vaga .etiqueta {
+    margin-left: auto;
+  }
 }

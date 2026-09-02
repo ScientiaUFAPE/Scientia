@@ -8,21 +8,26 @@ import * as editalService from '../servicos/editalService.js';
 import * as grupoService from '../servicos/grupoService.js';
 import * as pesquisadorService from '../servicos/pesquisadorService.js';
 import * as projetoService from '../servicos/projetoService.js';
+import * as publicacaoService from '../servicos/publicacaoService.js';
 import * as relatorioService from '../servicos/relatorioService.js';
+import * as vagaService from '../servicos/vagaService.js';
 import {
   RESPOSTA_AREAS,
   RESPOSTA_EDITAIS,
   RESPOSTA_GRUPOS,
   RESPOSTA_PESQUISADORES,
   RESPOSTA_PROJETOS,
+  RESPOSTA_PUBLICACOES,
 } from './fixturesAcervo.js';
 
 vi.mock('../servicos/areaService.js', () => ({ listar: vi.fn() }));
 vi.mock('../servicos/editalService.js', () => ({ listar: vi.fn() }));
 vi.mock('../servicos/grupoService.js', () => ({ listar: vi.fn() }));
 vi.mock('../servicos/pesquisadorService.js', () => ({ listar: vi.fn() }));
+vi.mock('../servicos/publicacaoService.js', () => ({ listar: vi.fn() }));
 vi.mock('../servicos/projetoService.js', () => ({ listar: vi.fn() }));
 vi.mock('../servicos/relatorioService.js', () => ({ obterIndicadoresProducoes: vi.fn() }));
+vi.mock('../servicos/vagaService.js', () => ({ listar: vi.fn() }));
 
 const sessaoFalsa = { usuario: null, token: null, carregando: false, entrar: vi.fn() };
 
@@ -61,13 +66,15 @@ describe('Guarda das rotas de cadastro no App', () => {
     grupoService.listar.mockResolvedValue(RESPOSTA_GRUPOS);
     pesquisadorService.listar.mockResolvedValue(RESPOSTA_PESQUISADORES);
     projetoService.listar.mockResolvedValue(RESPOSTA_PROJETOS);
+    publicacaoService.listar.mockResolvedValue(RESPOSTA_PUBLICACOES);
+    vagaService.listar.mockResolvedValue({ vagas: [], paginacao: { total: 0 } });
     relatorioService.obterIndicadoresProducoes.mockResolvedValue({
       indicadores: {
-        totalProducoes: 0,
-        porAno: [],
-        porTipo: [],
-        porArea: [],
-        areasDestaque: [],
+        totalProducoes: 4,
+        porAno: [{ ano: 2024, quantidade: 4 }],
+        porTipo: [{ tipo: 'artigo', quantidade: 4 }],
+        porArea: [{ idArea: 1, nome: 'Ciência da Computação', quantidade: 4 }],
+        areasDestaque: [{ idArea: 1, nome: 'Ciência da Computação', quantidade: 4 }],
       },
     });
   });
@@ -103,26 +110,24 @@ describe('Guarda das rotas de cadastro no App', () => {
     expect(screen.getByRole('heading', { name: titulo })).toBeInTheDocument();
   });
 
-  it('rota de indicadores redireciona visitante sem sessão para o login', async () => {
-    renderizarApp('/indicadores');
+  it('visitante sem sessão em / vê a frase-síntese da visão geral', async () => {
+    renderizarApp('/');
     await act(async () => {});
 
-    expect(screen.getByRole('heading', { name: 'Entrar no Scientia' })).toBeInTheDocument();
-    expect(
-      screen.queryByRole('heading', { name: 'Indicadores de produções científicas' }),
-    ).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(
+      /São 4 produções científicas no acervo/,
+    );
+    expect(screen.getByText('Produções', { selector: '.totais__rotulo' })).toBeInTheDocument();
+    expect(screen.getByText('Projetos em andamento')).toBeInTheDocument();
   });
 
-  it('rota de indicadores fica disponível para usuário autenticado', async () => {
-    sessaoFalsa.usuario = ALUNO;
-    sessaoFalsa.token = 'token-aluno';
-
+  it('a antiga rota de indicadores redireciona para a visão geral', async () => {
     renderizarApp('/indicadores');
     await act(async () => {});
 
-    expect(
-      screen.getByRole('heading', { name: 'Indicadores de produções científicas' }),
-    ).toBeInTheDocument();
-    expect(relatorioService.obterIndicadoresProducoes).toHaveBeenCalledWith('token-aluno');
+    expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(
+      /São 4 produções científicas no acervo/,
+    );
+    expect(screen.queryByRole('heading', { name: 'Entrar' })).not.toBeInTheDocument();
   });
 });

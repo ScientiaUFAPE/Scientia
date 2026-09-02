@@ -31,6 +31,7 @@ export async function listar(filtros) {
 
   return {
     vagas: resultado.itens,
+    resumo: resultado.resumo,
     paginacao: {
       pagina: paginacao.pagina,
       porPagina: paginacao.porPagina,

@@ -56,7 +56,7 @@ describe('Tela de projetos de pesquisa', () => {
 
     expect(within(cartao).getByText('Em andamento')).toBeInTheDocument();
     expect(within(cartao).getByText('4 publicações')).toBeInTheDocument();
-    expect(within(cartao).getByText('Ciência da Computação')).toBeInTheDocument();
+    expect(within(cartao).getByText('CC')).toBeInTheDocument();
     expect(
       within(cartao).getByRole('link', { name: 'Grupo de Pesquisa em Computação Aplicada' }),
     ).toHaveAttribute('href', '/grupos/2');

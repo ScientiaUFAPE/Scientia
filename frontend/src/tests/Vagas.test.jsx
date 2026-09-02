@@ -3,11 +3,16 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Vagas } from '../paginas/Vagas.jsx';
+import * as projetoService from '../servicos/projetoService.js';
 import * as vagaService from '../servicos/vagaService.js';
 
 vi.mock('../servicos/vagaService.js', () => ({
   listar: vi.fn(),
   excluir: vi.fn(),
+}));
+
+vi.mock('../servicos/projetoService.js', () => ({
+  listar: vi.fn(),
 }));
 
 const sessaoFalsa = { usuario: null, token: null };
@@ -26,10 +31,12 @@ const resposta = {
       qtdVagas: 2,
       dataAbertura: '2026-08-23',
       projeto: { id: 3, titulo: 'Projeto de IA' },
+      area: { id: 1, nome: 'Ciência da Computação' },
       totalCandidaturas: 4,
     },
   ],
   paginacao: { pagina: 1, porPagina: 20, total: 1 },
+  resumo: { totalVagas: 1, abertas: 1, primeiroAno: 2026, totalCandidaturas: 4 },
 };
 
 function renderizar() {
@@ -46,6 +53,7 @@ describe('Tela de vagas', () => {
     sessaoFalsa.token = null;
     vagaService.listar.mockResolvedValue(resposta);
     vagaService.excluir.mockResolvedValue({});
+    projetoService.listar.mockResolvedValue({ projetos: [{ id: 3, titulo: 'Projeto de IA' }] });
   });
 
   afterEach(() => {
@@ -62,7 +70,8 @@ describe('Tela de vagas', () => {
       'href',
       '/projetos/3',
     );
-    expect(screen.getByText(/4 candidaturas/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/4 candidaturas/i)).not.toHaveLength(0);
+    expect(screen.getByRole('link', { name: 'Candidatar-se' })).toHaveAttribute('href', '/login');
     expect(screen.queryByRole('link', { name: /cadastrar vaga/i })).not.toBeInTheDocument();
   });
 
@@ -70,11 +79,13 @@ describe('Tela de vagas', () => {
     renderizar();
     await act(async () => {});
 
-    fireEvent.change(screen.getByLabelText('Situação'), { target: { value: 'fechada' } });
+    fireEvent.click(screen.getByRole('button', { name: /Fechadas\s*0/ }));
     await act(async () => {});
 
     expect(vagaService.listar).toHaveBeenLastCalledWith({
+      busca: '',
       status: 'fechada',
+      idProjeto: '',
       pagina: 1,
       porPagina: 20,
     });

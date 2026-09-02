@@ -12,6 +12,6 @@ export function listarGrupos() {
   return requisitar('/relatorios/grupos');
 }
 
-export function obterIndicadoresProducoes(token) {
-  return requisitar('/relatorios/indicadores-producoes', { token });
+export function obterIndicadoresProducoes() {
+  return requisitar('/relatorios/indicadores-producoes');
 }

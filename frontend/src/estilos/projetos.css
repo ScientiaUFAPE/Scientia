@@ -1,32 +1,38 @@
 .etiqueta--situacao,
 .etiqueta--papel {
-  background-color: rgba(93, 103, 121, 0.14);
-  color: var(--texto-suave);
+  border-color: var(--fio);
+  color: var(--mudo);
 }
 
 .etiqueta--em_andamento,
 .etiqueta--coordenador,
 .etiqueta--lider {
-  background-color: rgba(15, 157, 143, 0.15);
-  color: #0b6d63;
+  border-color: rgba(9, 208, 201, 0.45);
+  color: #0b7a76;
 }
 
 .etiqueta--concluido {
-  background-color: rgba(31, 75, 142, 0.12);
-  color: var(--primaria);
+  border-color: rgba(27, 35, 49, 0.35);
+  color: var(--tinta);
 }
 
 .etiqueta--cancelado {
-  background-color: var(--erro-fundo);
+  border-color: rgba(179, 38, 30, 0.25);
   color: var(--erro);
 }
 
 /* Telas de detalhe de projeto e de grupo */
 .detalhe__voltar {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   margin-bottom: 1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mudo);
+}
+
+.detalhe__voltar:hover {
+  color: var(--tinta);
 }
 
 .detalhe__cabecalho {
@@ -38,8 +44,10 @@
 }
 
 .detalhe__secao {
-  font-size: 1.15rem;
-  margin: 2rem 0 1rem;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 2rem 0 0.9rem;
 }
 
 .detalhe .lista-dados dd .lista-chips {
@@ -50,8 +58,9 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
 }
 
 .lista-pessoas__item {
@@ -59,14 +68,16 @@
   align-items: center;
   gap: 0.6rem;
   flex-wrap: wrap;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--fio);
+  border-radius: var(--raio);
 }
 
 .lista-pessoas__nome {
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 .lista-pessoas__detalhe {
-  font-size: 0.85rem;
-  color: var(--texto-suave);
+  font-size: 13px;
+  color: var(--mudo);
 }

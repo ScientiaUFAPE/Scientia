@@ -1,16 +1,31 @@
 :root {
-  --fundo: #f3f5fa;
-  --superficie: #ffffff;
-  --borda: #dde2ec;
-  --texto: #1b2331;
-  --texto-suave: #5d6779;
-  --primaria: #1f4b8e;
-  --primaria-escura: #163a70;
-  --destaque: #0f9d8f;
+  --canvas: #ffffff;
+  --rail: #f7f7f8;
+  --fio: #e8e8ea;
+  --preenche: #ececee;
+  --preenche-forte: #e4e4e7;
+
+  --tinta: #1b2331;
+  --mudo: #8a8a8f;
+  --mudo-forte: #5d6779;
+  --acento: #09d0c9;
+  --teal: var(--acento);
+
   --erro: #b3261e;
   --erro-fundo: #fdecea;
-  --raio: 10px;
-  --sombra: 0 8px 24px rgba(27, 35, 49, 0.08);
+
+  --raio-btn: 10px;
+  --raio: 12px;
+  --raio-cartao: 14px;
+
+  --sombra-flutuante: 0 10px 30px rgba(27, 35, 49, 0.12), 0 0 0 1px rgba(27, 35, 49, 0.04);
+
+  --fundo: var(--canvas);
+  --superficie: var(--canvas);
+  --borda: var(--fio);
+  --texto: var(--tinta);
+  --texto-suave: var(--mudo-forte);
+  --primaria: var(--tinta);
 }
 
 * {
@@ -20,20 +35,18 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background-color: var(--fundo);
-  color: var(--texto);
-  font-family: 'Segoe UI', system-ui, -apple-system, Arial, sans-serif;
-  font-size: 16px;
+  background-color: var(--canvas);
+  color: var(--tinta);
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+  font-size: 15px;
   line-height: 1.5;
+  letter-spacing: -0.011em;
+  -webkit-font-smoothing: antialiased;
 }
 
 a {
-  color: var(--primaria);
+  color: inherit;
   text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 
 h1,
@@ -43,12 +56,15 @@ h2 {
 }
 
 .pagina__titulo {
-  font-size: 1.6rem;
+  font-size: 29px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   margin-bottom: 0.35rem;
+  text-wrap: balance;
 }
 
 .pagina__descricao {
-  color: var(--texto-suave);
+  color: var(--mudo);
   margin: 0 0 1.75rem;
   max-width: 60ch;
 }
@@ -62,97 +78,107 @@ h2 {
 }
 
 .campo > span {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--texto-suave);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mudo);
 }
 
 .campo input,
 .campo select,
 .campo textarea {
-  padding: 0.7rem 0.85rem;
-  border: 1px solid var(--borda);
-  border-radius: var(--raio);
-  background-color: var(--superficie);
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--fio);
+  border-radius: var(--raio-btn);
+  background-color: var(--canvas);
   font: inherit;
   color: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.15s;
 }
 
 .campo input:focus,
 .campo select:focus,
 .campo textarea:focus {
   outline: none;
-  border-color: var(--primaria);
-  box-shadow: 0 0 0 3px rgba(31, 75, 142, 0.15);
+  border-color: #d4d4d8;
+}
+
+.campo input::placeholder,
+.campo textarea::placeholder {
+  color: var(--mudo);
 }
 
 /* Botões */
 .botao {
-  display: inline-block;
-  padding: 0.7rem 1.2rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 38px;
+  padding: 0 0.9rem;
   border: 1px solid transparent;
-  border-radius: var(--raio);
+  border-radius: var(--raio-btn);
   font: inherit;
   font-weight: 600;
   cursor: pointer;
-  text-align: center;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: background-color 0.15s, border-color 0.15s;
 }
 
 .botao:disabled {
-  opacity: 0.65;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .botao--primario {
   width: 100%;
-  background-color: var(--primaria);
-  color: #ffffff;
+  background-color: var(--preenche);
+  color: var(--tinta);
 }
 
 .botao--primario:hover:not(:disabled) {
-  background-color: var(--primaria-escura);
-  text-decoration: none;
+  background-color: var(--preenche-forte);
 }
 
 .botao--discreto {
-  padding: 0.45rem 0.9rem;
-  background-color: transparent;
-  border-color: var(--borda);
-  color: var(--texto-suave);
-  font-size: 0.875rem;
+  background-color: var(--canvas);
+  border-color: var(--fio);
+  color: var(--tinta);
+  font-weight: 500;
 }
 
-.botao--discreto:hover {
-  border-color: var(--erro);
-  color: var(--erro);
+.botao--discreto:hover:not(:disabled) {
+  background-color: #fafafa;
+  border-color: #dcdce0;
+}
+
+.botao--compacto {
+  width: auto;
 }
 
 /* Avisos */
 .alerta {
-  padding: 0.75rem 0.9rem;
+  padding: 0.7rem 0.85rem;
   border-radius: var(--raio);
   margin: 0 0 1.1rem;
-  font-size: 0.9rem;
+  font-size: 13px;
 }
 
 .alerta--erro {
   background-color: var(--erro-fundo);
-  border-left: 4px solid var(--erro);
+  border: 1px solid rgba(179, 38, 30, 0.18);
   color: var(--erro);
 }
 
 .aviso-carregando {
   padding: 2rem;
   text-align: center;
-  color: var(--texto-suave);
+  color: var(--mudo);
 }
 
 .aviso-central {
   max-width: 32rem;
   margin: 3rem auto;
   text-align: center;
+  color: var(--mudo);
 }
 
 .aviso-central .botao {
@@ -162,25 +188,62 @@ h2 {
 /* Etiqueta do tipo do usuário */
 .etiqueta {
   display: inline-block;
-  padding: 0.15rem 0.6rem;
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--fio);
   border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
+  color: var(--mudo-forte);
 }
 
 .etiqueta--admin {
-  background-color: rgba(15, 157, 143, 0.15);
-  color: #0b6d63;
+  border-color: rgba(9, 208, 201, 0.45);
+  color: #0b7a76;
 }
 
-.etiqueta--aluno {
-  background-color: rgba(31, 75, 142, 0.12);
-  color: var(--primaria);
+.rolagem-discreta {
+  overflow-x: hidden;
+  color: transparent;
+  transition: color 300ms ease;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
 }
 
-.etiqueta--pesquisador {
-  background-color: rgba(179, 38, 30, 0.1);
-  color: #8a4b12;
+:where(.rolagem-discreta) > * {
+  color: var(--tinta);
+}
+
+.rolagem-discreta.rolando {
+  color: var(--preenche-forte);
+  scrollbar-color: var(--preenche-forte) transparent;
+}
+
+.rolagem-discreta::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.rolagem-discreta::-webkit-scrollbar-track,
+.rolagem-discreta::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+.rolagem-discreta::-webkit-scrollbar-button {
+  display: none;
+}
+
+.rolagem-discreta::-webkit-scrollbar-thumb {
+  background: transparent;
+  box-shadow: inset 0 0 0 8px;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rolagem-discreta {
+    transition: none;
+  }
 }

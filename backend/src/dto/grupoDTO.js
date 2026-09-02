@@ -6,6 +6,8 @@ export function grupoResumoResposta(grupo) {
     anoCriacao: grupo.anoCriacao,
     totalProjetos: grupo.totalProjetos,
     totalMembros: grupo.totalMembros,
+    lider: grupo.lider,
+    membrosPrevia: grupo.membrosPrevia,
   };
 }
 

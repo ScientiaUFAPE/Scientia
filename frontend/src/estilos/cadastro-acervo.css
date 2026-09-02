@@ -5,7 +5,6 @@
   background-color: var(--superficie);
   border: 1px solid var(--borda);
   border-radius: var(--raio);
-  box-shadow: var(--sombra);
 }
 
 .formulario-acervo textarea {
@@ -29,8 +28,8 @@
 }
 
 .formulario-acervo__acoes .botao--discreto:hover {
-  border-color: var(--primaria);
-  color: var(--primaria);
+  border-color: var(--tinta);
+  color: var(--tinta);
 }
 
 .campo__rotulo {
@@ -54,9 +53,9 @@
   flex-wrap: wrap;
   margin: 0;
   padding: 0.7rem 0.85rem;
-  border: 1px solid var(--primaria);
+  border: 1px solid var(--tinta);
   border-radius: var(--raio);
-  background-color: rgba(31, 75, 142, 0.06);
+  background-color: #fafafa;
 }
 
 .seletor-busca__estado {
@@ -92,7 +91,7 @@
 }
 
 .seletor-busca__resultado:hover:not(:disabled) {
-  background-color: rgba(31, 75, 142, 0.06);
+  background-color: #fafafa;
 }
 
 .seletor-busca__resultado:disabled {
@@ -112,7 +111,7 @@
   padding: 1.25rem;
   border: 1px solid var(--borda);
   border-radius: var(--raio);
-  background-color: var(--fundo);
+  background-color: var(--rail);
 }
 
 .editor-autores__cabecalho {
@@ -120,7 +119,7 @@
 }
 
 .editor-autores__cabecalho h2 {
-  font-size: 1.05rem;
+  font-size: 15px;
 }
 
 .editor-autores__cabecalho p {
@@ -160,10 +159,10 @@
   width: 1.8rem;
   height: 1.8rem;
   border-radius: 50%;
-  background-color: var(--primaria);
-  color: #ffffff;
-  font-size: 0.85rem;
-  font-weight: 700;
+  background-color: var(--tinta);
+  color: var(--canvas);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 .editor-autores__dados {
@@ -215,23 +214,23 @@
 
 .chip--escolha input {
   margin: 0;
-  accent-color: var(--primaria);
+  accent-color: var(--tinta);
 }
 
 .chip--marcado {
-  border-color: var(--primaria);
-  background-color: rgba(31, 75, 142, 0.2);
+  border-color: var(--tinta);
+  color: var(--tinta);
   font-weight: 600;
 }
 
-.painel__atalhos {
+.conta__atalhos {
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
   margin-top: 1rem;
 }
 
-.painel__atalhos .botao--discreto:hover {
-  border-color: var(--primaria);
-  color: var(--primaria);
+.conta__atalhos .botao--discreto:hover {
+  border-color: var(--tinta);
+  color: var(--tinta);
 }

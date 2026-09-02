@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { Painel } from '../paginas/Painel.jsx';
+import { Conta } from '../paginas/Conta.jsx';
 
 const sessaoFalsa = { usuario: null };
 
@@ -21,18 +21,21 @@ function renderizarTela(tipo) {
 
   return render(
     <MemoryRouter>
-      <Painel />
+      <Conta />
     </MemoryRouter>,
   );
 }
 
-describe('Painel', () => {
+describe('Conta', () => {
   beforeEach(() => {
     sessaoFalsa.usuario = null;
   });
 
-  it('para o aluno, não mostra os atalhos de escrita no acervo', () => {
+  it('para o aluno, mostra os dados da sessão sem os atalhos de escrita no acervo', () => {
     renderizarTela('aluno');
+
+    expect(screen.getByRole('heading', { name: 'Conta' })).toBeInTheDocument();
+    expect(screen.getByText('ana@ufape.edu.br')).toBeInTheDocument();
 
     expect(screen.queryByText('Alimentar o acervo')).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: /cadastrar publicação/i })).not.toBeInTheDocument();

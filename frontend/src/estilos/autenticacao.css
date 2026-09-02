@@ -1,40 +1,63 @@
+/* Os azuis de apoio da marca só aparecem aqui, no fundo do login. */
 .tela-auth {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem 1rem;
-  background: linear-gradient(160deg, var(--primaria) 0%, var(--primaria-escura) 45%, #0d264b 100%);
+  background: linear-gradient(160deg, #163a70 0%, #0d264b 100%);
 }
 
 .cartao-auth {
   width: 100%;
-  max-width: 26rem;
-  padding: 2.25rem;
-  background-color: var(--superficie);
-  border-radius: 14px;
-  box-shadow: 0 18px 45px rgba(9, 22, 45, 0.28);
+  max-width: 25rem;
+  padding: 2rem;
+  background-color: var(--canvas);
+  border-radius: var(--raio-cartao);
+  box-shadow: var(--sombra-flutuante);
+}
+
+.cartao-auth__marca {
+  display: block;
+  width: 176px;
+  max-width: 100%;
+  margin-bottom: 1.6rem;
 }
 
 .cartao-auth__titulo {
-  font-size: 1.5rem;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 .cartao-auth__subtitulo {
-  margin: 0.4rem 0 1.75rem;
-  color: var(--texto-suave);
-  font-size: 0.925rem;
+  margin: 0.35rem 0 1.5rem;
+  color: var(--mudo);
+  font-size: 13px;
+}
+
+.cartao-auth .botao--primario {
+  margin-top: 0.4rem;
 }
 
 .cartao-auth__rodape {
-  margin: 1.25rem 0 0;
+  margin: 1.1rem 0 0;
   text-align: center;
-  font-size: 0.9rem;
-  color: var(--texto-suave);
+  font-size: 13px;
+  color: var(--mudo);
+}
+
+.cartao-auth__rodape a {
+  color: var(--tinta);
+  font-weight: 500;
+}
+
+.cartao-auth__rodape a:hover {
+  text-decoration: underline;
 }
 
 .cartao-auth__rodape + .cartao-auth__rodape {
-  margin-top: 0.4rem;
+  margin-top: 0.35rem;
 }
 
 @media (max-width: 480px) {

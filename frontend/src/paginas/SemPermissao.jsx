@@ -7,8 +7,8 @@ export function SemPermissao() {
       <p className="pagina__descricao">
         Sua conta está autenticada, mas o papel dela não permite abrir essa página.
       </p>
-      <Link className="botao botao--primario" to="/painel">
-        Voltar para o painel
+      <Link className="botao botao--primario" to="/">
+        Voltar para a visão geral
       </Link>
     </section>
   );

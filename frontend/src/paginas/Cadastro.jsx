@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 import { useAuth } from '../contexto/AuthContext.jsx';
+import lockup from '../assets/lockup-horizontal.png';
 import * as cursoService from '../servicos/cursoService.js';
 import { ROTULOS_VINCULO } from '../utils/acervo.js';
 
@@ -33,7 +34,7 @@ export function Cadastro() {
   }, []);
 
   if (usuario) {
-    return <Navigate to="/painel" replace />;
+    return <Navigate to="/" replace />;
   }
 
   function alterar(evento) {
@@ -67,7 +68,7 @@ export function Cadastro() {
 
     try {
       await registrar(dadosDoCadastro);
-      navegar('/painel', { replace: true });
+      navegar('/', { replace: true });
     } catch (falha) {
       setErro(falha.message);
       setEnviando(false);
@@ -77,6 +78,7 @@ export function Cadastro() {
   return (
     <div className="tela-auth">
       <form className="cartao-auth" onSubmit={enviar}>
+        <img className="cartao-auth__marca" src={lockup} alt="Scientia — Hub de Produção Científica do BCC" />
         <h1 className="cartao-auth__titulo">Criar conta</h1>
         <p className="cartao-auth__subtitulo">
           Preencha os dados abaixo para começar a usar o sistema.

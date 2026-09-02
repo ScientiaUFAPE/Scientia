@@ -5,7 +5,12 @@ import { Paginacao } from '../componentes/Paginacao.jsx';
 import { useAuth } from '../contexto/AuthContext.jsx';
 import * as grupoService from '../servicos/grupoService.js';
 import * as projetoService from '../servicos/projetoService.js';
-import { podeCadastrarNoAcervo, POR_PAGINA, ROTULOS_STATUS } from '../utils/acervo.js';
+import {
+  podeCadastrarNoAcervo,
+  POR_PAGINA,
+  ROTULOS_STATUS,
+  siglaDaArea,
+} from '../utils/acervo.js';
 
 export function Projetos() {
   const { usuario, token } = useAuth();
@@ -178,44 +183,42 @@ export function Projetos() {
       {!carregando && !erro && projetos.length > 0 && (
         <ul className="lista-acervo">
           {projetos.map((projeto) => (
-            <li key={projeto.id} className="cartao cartao-acervo">
-              <div className="cartao-acervo__topo">
-                <span className={`etiqueta etiqueta--situacao etiqueta--${projeto.status}`}>
-                  {ROTULOS_STATUS[projeto.status] ?? projeto.status}
-                </span>
-                <span className="cartao-acervo__ano">
-                  {projeto.totalPublicacoes}{' '}
-                  {projeto.totalPublicacoes === 1 ? 'publicação' : 'publicações'}
-                </span>
-              </div>
+            <li key={projeto.id} className="linha-acervo linha-acervo--navega">
+              <span className="linha-acervo__area">
+                {siglaDaArea(projeto.areas[0]?.nome)}
+              </span>
 
-              <h2 className="cartao-acervo__titulo">
-                <Link to={`/projetos/${projeto.id}`}>{projeto.titulo}</Link>
-              </h2>
+              <Link className="linha-acervo__titulo linha-acervo__alvo" to={`/projetos/${projeto.id}`}>
+                {projeto.titulo}
+              </Link>
 
               {projeto.grupo && (
-                <p className="cartao-acervo__vinculo">
-                  Grupo: <Link to={`/grupos/${projeto.grupo.id}`}>{projeto.grupo.nome}</Link>
-                </p>
+                <Link
+                  className="linha-acervo__meta linha-acervo__meta--link"
+                  to={`/grupos/${projeto.grupo.id}`}
+                >
+                  {projeto.grupo.nome}
+                </Link>
               )}
 
-              <ul className="lista-chips">
-                {projeto.areas.map((area) => (
-                  <li key={area.id} className="chip">
-                    {area.nome}
-                  </li>
-                ))}
-              </ul>
+              <span className="linha-acervo__meta">
+                {projeto.totalPublicacoes}{' '}
+                {projeto.totalPublicacoes === 1 ? 'publicação' : 'publicações'}
+              </span>
+
+              <span className={`etiqueta etiqueta--situacao etiqueta--${projeto.status}`}>
+                {ROTULOS_STATUS[projeto.status] ?? projeto.status}
+              </span>
 
               {podeCadastrarNoAcervo(usuario) && (
-                <div className="acoes-registro">
+                <span className="linha-acervo__acoes">
                   <Link className="botao botao--discreto" to={`/projetos/${projeto.id}/editar`}>
                     Editar
                   </Link>
                   <button type="button" className="botao botao--discreto" onClick={() => excluirProjeto(projeto)}>
                     Excluir
                   </button>
-                </div>
+                </span>
               )}
             </li>
           ))}

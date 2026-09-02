@@ -1,0 +1,104 @@
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { Pesquisadores } from '../paginas/Pesquisadores.jsx';
+import * as grupoService from '../servicos/grupoService.js';
+import * as pesquisadorService from '../servicos/pesquisadorService.js';
+import { RESPOSTA_GRUPOS, RESPOSTA_PESQUISADORES } from './fixturesAcervo.js';
+
+vi.mock('../servicos/pesquisadorService.js', () => ({
+  listar: vi.fn(),
+  obterPorId: vi.fn(),
+}));
+
+vi.mock('../servicos/grupoService.js', () => ({
+  listar: vi.fn(),
+}));
+
+function renderizar() {
+  return render(
+    <MemoryRouter>
+      <Pesquisadores />
+    </MemoryRouter>,
+  );
+}
+
+describe('Tela de pesquisadores', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    pesquisadorService.listar.mockResolvedValue(RESPOSTA_PESQUISADORES);
+    pesquisadorService.obterPorId.mockResolvedValue({
+      ...RESPOSTA_PESQUISADORES.pesquisadores[0],
+      grupos: RESPOSTA_GRUPOS.grupos,
+      areasFrequentes: [{ id: 1, nome: 'Ciência da Computação' }],
+      projetosEmAndamento: [],
+    });
+    grupoService.listar.mockResolvedValue(RESPOSTA_GRUPOS);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.clearAllMocks();
+  });
+
+  it('lista cada pesquisador com iniciais, vínculo e total de publicações', async () => {
+    renderizar();
+    await act(async () => {});
+
+    expect(pesquisadorService.listar).toHaveBeenLastCalledWith({
+      busca: '',
+      vinculo: '',
+      idGrupo: '',
+      pagina: 1,
+      porPagina: 20,
+    });
+
+    const linha = screen.getByText('Ana Souza').closest('[role="button"]');
+
+    expect(within(linha).getByText('AS')).toBeInTheDocument();
+    expect(within(linha).getByText('12 publicações')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Docentes' })).toBeInTheDocument();
+
+    const outra = screen.getByText('Bruno Lima').closest('[role="button"]');
+
+    expect(within(outra).getByText('3 publicações')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Discentes' })).toBeInTheDocument();
+  });
+
+  it('o filtro de vínculo volta para a primeira página e chega no serviço', async () => {
+    renderizar();
+    await act(async () => {});
+
+    fireEvent.click(screen.getByRole('button', { name: /Discente 1/ }));
+    await act(async () => {});
+
+    expect(pesquisadorService.listar).toHaveBeenLastCalledWith({
+      busca: '',
+      vinculo: 'discente',
+      idGrupo: '',
+      pagina: 1,
+      porPagina: 20,
+    });
+  });
+
+  it('a linha abre o painel com o Lattes e o caminho do perfil', async () => {
+    renderizar();
+    await act(async () => {});
+
+    fireEvent.click(screen.getByText('Ana Souza'));
+    await act(async () => {});
+
+    const painel = screen.getByRole('complementary');
+
+    expect(within(painel).getByRole('heading', { name: 'Ana Souza' })).toBeInTheDocument();
+    expect(within(painel).getByRole('link', { name: '1234567890123456' })).toHaveAttribute(
+      'href',
+      'http://lattes.cnpq.br/1234567890123456',
+    );
+    expect(within(painel).getByRole('link', { name: 'Abrir página completa' })).toHaveAttribute(
+      'href',
+      '/pesquisadores/91',
+    );
+  });
+});

@@ -139,6 +139,11 @@ const grupoComputacaoFixture = {
   anoCriacao: 2015,
   totalProjetos: 1,
   totalMembros: 2,
+  lider: 'Zuleica Souza',
+  membrosPrevia: [
+    { id: 91, nome: 'Zuleica Souza' },
+    { id: 104, nome: 'Bruno Lima' },
+  ],
 };
 
 const pesquisadorZuleicaFixture = {
@@ -147,6 +152,8 @@ const pesquisadorZuleicaFixture = {
   vinculo: 'docente',
   numeroLattes: '1234567890123456',
   totalPublicacoes: 2,
+  ultimaPublicacao: 2025,
+  grupoPrincipal: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
 };
 
 describe('API', () => {
@@ -699,6 +706,12 @@ describe('Acervo público', () => {
     assert.deepStrictEqual(lista.body, {
       grupos: [grupoComputacaoFixture],
       paginacao: { pagina: 1, porPagina: 20, total: 1 },
+      resumo: {
+        totalGrupos: 2,
+        totalProjetos: 2,
+        totalMembros: 3,
+        maiorTotalProjetos: 1,
+      },
     });
     assert.strictEqual(detalhe.status, 200);
     assert.deepStrictEqual(detalhe.body, {
@@ -723,6 +736,11 @@ describe('Acervo público', () => {
     assert.deepStrictEqual(resposta.body, {
       pesquisadores: [pesquisadorZuleicaFixture],
       paginacao: { pagina: 1, porPagina: 20, total: 1 },
+      resumo: {
+        totalPesquisadores: 3,
+        totalAutorias: 6,
+        porVinculo: { docente: 1, discente: 1, externo: 1 },
+      },
     });
     assert.strictEqual(Object.hasOwn(resposta.body.pesquisadores[0], 'email'), false);
   });
@@ -747,6 +765,18 @@ describe('Acervo público', () => {
       nome: 'Zuleica Souza',
       vinculo: 'docente',
       numeroLattes: '1234567890123456',
+      totalPublicacoes: 2,
+      ultimaPublicacao: 2025,
+      grupos: [
+        { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada', papel: 'lider' },
+      ],
+      areasFrequentes: [
+        { id: 2, nome: 'Agronomia', quantidade: 1 },
+        { id: 1, nome: 'Ciência da Computação', quantidade: 1 },
+      ],
+      projetosEmAndamento: [
+        { id: 3, titulo: 'Inteligência artificial aplicada ao Agreste' },
+      ],
     });
     assert.strictEqual(Object.hasOwn(resposta.body, 'email'), false);
     assert.strictEqual(Object.hasOwn(resposta.body, 'idConta'), false);
@@ -805,27 +835,139 @@ describe('Acervo público', () => {
     assert.strictEqual(resposta.status, 200);
     assert.deepStrictEqual(resposta.body, {
       editais: [
-        { id: 9, nome: 'Apoio a Projetos 02/2024', ano: 2024 },
-        { id: 8, nome: 'Chamada Interna 01/2024', ano: 2024 },
-        { id: 7, nome: 'Edital Universal nº 03/2022', ano: 2022 },
-        { id: 10, nome: 'Edital de Extensão 01/2021', ano: 2021 },
+        { id: 9, nome: 'Apoio a Projetos 02/2024', ano: 2024, totalProjetos: 0, grupos: [] },
+        { id: 8, nome: 'Chamada Interna 01/2024', ano: 2024, totalProjetos: 0, grupos: [] },
+        {
+          id: 7,
+          nome: 'Edital Universal nº 03/2022',
+          ano: 2022,
+          totalProjetos: 1,
+          grupos: [{ id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' }],
+        },
+        { id: 10, nome: 'Edital de Extensão 01/2021', ano: 2021, totalProjetos: 0, grupos: [] },
       ],
     });
   });
 
+  it('/api/editais inclui os projetos vinculados ao informar comProjetos=1', async () => {
+    await consultar('INSERT INTO edital (id_edital, nome_edital, ano) VALUES ($1, $2, $3)', [
+      8,
+      'Chamada Interna 01/2024',
+      2024,
+    ]);
+
+    const resposta = await request(app).get('/api/editais?comProjetos=1');
+
+    assert.strictEqual(resposta.status, 200);
+    const edital7 = resposta.body.editais.find((edital) => edital.id === 7);
+    const edital8 = resposta.body.editais.find((edital) => edital.id === 8);
+
+    assert.deepStrictEqual(edital7.projetos, [
+      {
+        id: 3,
+        titulo: 'Inteligência artificial aplicada ao Agreste',
+        status: 'em_andamento',
+        grupo: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+      },
+    ]);
+    assert.strictEqual(edital8.totalProjetos, 0);
+    assert.deepStrictEqual(edital8.grupos, []);
+    assert.deepStrictEqual(edital8.projetos, []);
+  });
+
+  it('/api/editais valida o parâmetro comProjetos', async () => {
+    const resposta = await request(app).get('/api/editais?comProjetos=abc');
+
+    assert.strictEqual(resposta.status, 400);
+    assert.strictEqual(resposta.body.mensagem, 'O parâmetro comProjetos deve ser 1 ou true.');
+  });
+
+  it('/api/editais reúne os grupos distintos e ordenados dos projetos vinculados', async () => {
+    await consultar(
+      `
+        INSERT INTO projeto_pesquisa (
+          id_projeto, id_grupo, id_edital, titulo, resumo, data_inicio, data_fim, status, origem
+        )
+        VALUES
+          ($1, $2, $3, $4, $5, $6, $7, $8, $9),
+          ($10, $11, $12, $13, $14, $15, $16, $17, $18)
+      `,
+      [
+        5,
+        1,
+        7,
+        'Agroecologia digital no semiárido',
+        'Estuda práticas sustentáveis com apoio de tecnologia.',
+        '2024-06-01',
+        null,
+        'planejado',
+        'manual',
+        6,
+        1,
+        7,
+        'Monitoramento de solo com sensores de baixo custo',
+        'Aplica sensores IoT para monitorar a umidade do solo.',
+        '2024-07-01',
+        null,
+        'planejado',
+        'manual',
+      ],
+    );
+
+    const resposta = await request(app).get('/api/editais?comProjetos=1');
+
+    assert.strictEqual(resposta.status, 200);
+    const edital7 = resposta.body.editais.find((edital) => edital.id === 7);
+
+    assert.strictEqual(edital7.totalProjetos, 3);
+    assert.deepStrictEqual(edital7.grupos, [
+      { id: 1, nome: 'Grupo de Pesquisa em Agroecologia Digital' },
+      { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+    ]);
+    assert.deepStrictEqual(
+      edital7.projetos.map((projeto) => projeto.id),
+      [6, 5, 3],
+    );
+  });
+
+  it('/api/editais retorna lista vazia quando não há editais', async () => {
+    await reiniciarCenarioTeste();
+
+    const resposta = await request(app).get('/api/editais');
+    const respostaComProjetos = await request(app).get('/api/editais?comProjetos=1');
+
+    assert.strictEqual(resposta.status, 200);
+    assert.deepStrictEqual(resposta.body, { editais: [] });
+    assert.strictEqual(respostaComProjetos.status, 200);
+    assert.deepStrictEqual(respostaComProjetos.body, { editais: [] });
+  });
 });
 
 describe('Indicadores de produções científicas', () => {
   beforeEach(reiniciarCenarioAcervoTeste);
 
-  it('exige autenticação para consultar os indicadores', async () => {
+  it('consulta os indicadores publicamente, sem token', async () => {
     const resposta = await request(app).get('/api/relatorios/indicadores-producoes');
 
-    assert.strictEqual(resposta.status, 401);
-    assert.strictEqual(
-      resposta.body.mensagem,
-      'Envie o token de acesso no cabeçalho Authorization.',
-    );
+    assert.strictEqual(resposta.status, 200);
+    assert.deepStrictEqual(resposta.body.indicadores, {
+      totalProducoes: 3,
+      porAno: [
+        { ano: 2023, quantidade: 1 },
+        { ano: 2024, quantidade: 1 },
+        { ano: 2025, quantidade: 1 },
+      ],
+      porTipo: [
+        { tipo: 'artigo', quantidade: 1 },
+        { tipo: 'capitulo', quantidade: 1 },
+        { tipo: 'resumo', quantidade: 1 },
+      ],
+      porArea: [
+        { idArea: 1, nome: 'Ciência da Computação', quantidade: 2 },
+        { idArea: 2, nome: 'Agronomia', quantidade: 1 },
+      ],
+      areasDestaque: [{ idArea: 1, nome: 'Ciência da Computação', quantidade: 2 }],
+    });
   });
 
   it('consolida produções por ano, tipo e área sem inflar contagens por autoria', async () => {

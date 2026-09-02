@@ -127,14 +127,12 @@ export function DetalheProjeto() {
       ) : (
         <ul className="lista-acervo">
           {projeto.publicacoes.map((publicacao) => (
-            <li key={publicacao.id} className="cartao cartao-acervo">
-              <div className="cartao-acervo__topo">
-                <span className="etiqueta etiqueta--tipo">
-                  {ROTULOS_TIPO[publicacao.tipo] ?? publicacao.tipo}
-                </span>
-                <span className="cartao-acervo__ano">{publicacao.ano}</span>
-              </div>
-              <h3 className="cartao-acervo__titulo">{publicacao.titulo}</h3>
+            <li key={publicacao.id} className="linha-acervo">
+              <span className="linha-acervo__titulo">{publicacao.titulo}</span>
+              <span className="linha-acervo__tipo">
+                {ROTULOS_TIPO[publicacao.tipo] ?? publicacao.tipo}
+              </span>
+              <span className="linha-acervo__ano">{publicacao.ano}</span>
             </li>
           ))}
         </ul>

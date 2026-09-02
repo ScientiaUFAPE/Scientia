@@ -7,6 +7,7 @@ export async function listar(req, res) {
   res.json({
     pesquisadores: listaDePesquisadoresResposta(resultado.pesquisadores),
     paginacao: resultado.paginacao,
+    resumo: resultado.resumo,
   });
 }
 

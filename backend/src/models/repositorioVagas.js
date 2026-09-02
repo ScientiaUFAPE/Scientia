@@ -3,7 +3,7 @@ import { montarPadraoBusca } from './buscaTextual.js';
 
 export async function listar({ busca, status, idProjeto, limite, deslocamento }) {
   const { clausula, parametros } = montarFiltros({ busca, status, idProjeto });
-  const total = await contar(clausula, parametros);
+  const [total, resumo] = await Promise.all([contar(clausula, parametros), obterResumo()]);
   const parametrosLista = [...parametros, limite, deslocamento];
   const indiceLimite = parametrosLista.length - 1;
   const indiceDeslocamento = parametrosLista.length;
@@ -19,6 +19,14 @@ export async function listar({ busca, status, idProjeto, limite, deslocamento })
         pr.id_projeto,
         pr.titulo AS titulo_projeto,
         (
+          SELECT json_build_object('id', ac.id_area, 'nome', ac.nome_area)
+          FROM possui_area pa
+          JOIN area_conhecimento ac ON ac.id_area = pa.id_area
+          WHERE pa.id_projeto = pr.id_projeto
+          ORDER BY ac.nome_area ASC
+          LIMIT 1
+        ) AS area,
+        (
           SELECT COUNT(*)::int
           FROM candidatura c
           WHERE c.id_vaga = v.id_vaga
@@ -26,13 +34,14 @@ export async function listar({ busca, status, idProjeto, limite, deslocamento })
       FROM vaga v
       JOIN projeto_pesquisa pr ON pr.id_projeto = v.id_projeto
       ${clausula}
-      ORDER BY v.data_abertura DESC, v.id_vaga DESC
+      ORDER BY CASE v.status WHEN 'aberta' THEN 0 ELSE 1 END,
+        v.data_abertura DESC, v.id_vaga DESC
       LIMIT $${indiceLimite} OFFSET $${indiceDeslocamento}
     `,
     parametrosLista,
   );
 
-  return { itens: rows.map(mapearVaga), total };
+  return { itens: rows.map(mapearVaga), total, resumo };
 }
 
 export async function buscarPorId(id, executor) {
@@ -48,6 +57,14 @@ export async function buscarPorId(id, executor) {
         v.data_abertura,
         pr.id_projeto,
         pr.titulo AS titulo_projeto,
+        (
+          SELECT json_build_object('id', ac.id_area, 'nome', ac.nome_area)
+          FROM possui_area pa
+          JOIN area_conhecimento ac ON ac.id_area = pa.id_area
+          WHERE pa.id_projeto = pr.id_projeto
+          ORDER BY ac.nome_area ASC
+          LIMIT 1
+        ) AS area,
         (
           SELECT COUNT(*)::int
           FROM candidatura c
@@ -123,13 +140,39 @@ async function contar(clausula, parametros) {
   return rows[0].total;
 }
 
+async function obterResumo() {
+  const { rows } = await consultar(`
+    SELECT
+      COUNT(*)::int AS total_vagas,
+      COUNT(*) FILTER (WHERE v.status = 'aberta')::int AS abertas,
+      EXTRACT(YEAR FROM MIN(v.data_abertura))::int AS primeiro_ano,
+      COALESCE((SELECT COUNT(*) FROM candidatura), 0)::int AS total_candidaturas
+    FROM vaga v
+  `);
+  const resumo = rows[0];
+  return {
+    totalVagas: resumo.total_vagas,
+    abertas: resumo.abertas,
+    primeiroAno: resumo.primeiro_ano,
+    totalCandidaturas: resumo.total_candidaturas,
+  };
+}
+
 function montarFiltros({ busca, status, idProjeto }) {
   const filtros = [];
   const parametros = [];
 
   if (busca) {
     parametros.push(montarPadraoBusca(busca));
-    filtros.push(String.raw`v.titulo ILIKE $${parametros.length} ESCAPE '\'`);
+    filtros.push(String.raw`(
+      v.titulo ILIKE $${parametros.length} ESCAPE '\'
+      OR COALESCE(v.requisitos, '') ILIKE $${parametros.length} ESCAPE '\'
+      OR EXISTS (
+        SELECT 1 FROM projeto_pesquisa pr_busca
+        WHERE pr_busca.id_projeto = v.id_projeto
+          AND pr_busca.titulo ILIKE $${parametros.length} ESCAPE '\'
+      )
+    )`);
   }
 
   if (status) {
@@ -165,6 +208,7 @@ function mapearVaga(linha) {
       titulo: linha.titulo_projeto,
     },
     totalCandidaturas: linha.total_candidaturas,
+    area: linha.area,
   };
 }
 
