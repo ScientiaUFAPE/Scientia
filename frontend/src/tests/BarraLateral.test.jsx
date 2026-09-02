@@ -27,6 +27,7 @@ describe('Barra lateral do hub', () => {
     renderizarBarra();
 
     expect(screen.getByRole('link', { name: 'Visão geral' })).toHaveAttribute('href', '/');
+    expect(screen.getByText('Produção científica do BCC')).toBeInTheDocument();
 
     expect(screen.getByText('Explorar')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Publicações' })).toHaveAttribute(

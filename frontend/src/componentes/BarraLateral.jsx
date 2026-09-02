@@ -102,7 +102,10 @@ export function BarraLateral() {
     <aside className="rail">
       <Link to="/" className="rail__marca">
         <img className="rail__simbolo" src={simbolo} alt="" />
-        <span className="rail__nome">Scientia</span>
+        <span className="rail__assinatura">
+          <span className="rail__nome">Scientia</span>
+          <span className="rail__descricao">Produção científica do BCC</span>
+        </span>
       </Link>
 
       {podeCadastrarNoAcervo(usuario) && (
