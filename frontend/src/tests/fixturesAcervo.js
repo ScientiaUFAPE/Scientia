@@ -59,9 +59,12 @@ export const RESPOSTA_GRUPOS = {
       anoCriacao: 2015,
       totalProjetos: 6,
       totalMembros: 5,
+      lider: 'Ana Souza',
+      membrosPrevia: [{ id: 91, nome: 'Ana Souza' }],
     },
   ],
   paginacao: { pagina: 1, porPagina: 20, total: 30 },
+  resumo: { totalGrupos: 30, totalProjetos: 120, totalMembros: 80, maiorTotalProjetos: 6 },
 };
 
 export const RESPOSTA_EDITAIS = {
@@ -127,6 +130,8 @@ export const RESPOSTA_PESQUISADORES = {
       vinculo: 'docente',
       numeroLattes: '1234567890123456',
       totalPublicacoes: 12,
+      ultimaPublicacao: 2026,
+      grupoPrincipal: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
     },
     {
       id: 104,
@@ -134,9 +139,15 @@ export const RESPOSTA_PESQUISADORES = {
       vinculo: 'discente',
       numeroLattes: '9876543210987654',
       totalPublicacoes: 3,
+      ultimaPublicacao: 2025,
     },
   ],
   paginacao: { pagina: 1, porPagina: 10, total: 2 },
+  resumo: {
+    totalPesquisadores: 2,
+    totalAutorias: 15,
+    porVinculo: { docente: 1, discente: 1, externo: 0 },
+  },
 };
 
 export const RESPOSTA_AREAS = {

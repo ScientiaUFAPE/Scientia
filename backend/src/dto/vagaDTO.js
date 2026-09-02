@@ -8,6 +8,7 @@ export function vagaResposta(vaga) {
     dataAbertura: vaga.dataAbertura,
     projeto: vaga.projeto,
     totalCandidaturas: vaga.totalCandidaturas,
+    area: vaga.area,
   };
 }
 

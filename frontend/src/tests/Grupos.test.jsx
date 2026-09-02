@@ -37,6 +37,7 @@ describe('Tela de grupos de pesquisa', () => {
 
     expect(grupoService.listar).toHaveBeenLastCalledWith({
       busca: '',
+      ordem: 'projetos',
       pagina: 1,
       porPagina: 20,
     });
@@ -45,8 +46,9 @@ describe('Tela de grupos de pesquisa', () => {
       .getByRole('link', { name: 'Grupo de Pesquisa em Computação Aplicada' })
       .closest('li');
 
-    expect(within(cartao).getByText('2015')).toBeInTheDocument();
-    expect(within(cartao).getByText('6 projetos · 5 membros')).toBeInTheDocument();
+    expect(within(cartao).getByText(/Desde 2015 · liderado por Ana Souza/)).toBeInTheDocument();
+    expect(within(cartao).getByText('6 projetos')).toBeInTheDocument();
+    expect(within(cartao).getByText('5')).toBeInTheDocument();
     expect(
       within(cartao).getByRole('link', { name: /diretório de grupos/i }),
     ).toHaveAttribute('href', 'http://dgp.cnpq.br/exemplo');

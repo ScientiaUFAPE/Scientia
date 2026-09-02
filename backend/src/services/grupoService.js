@@ -1,21 +1,34 @@
 import { transacao } from '../config/bd.js';
 import { ErroHttp } from '../erros/ErroHttp.js';
 import * as repositorioGrupos from '../models/repositorioGrupos.js';
-import { POSTGRES_INTEGER_MAXIMO, validarId, validarPaginacao } from './consultaParametrosService.js';
+import {
+  POSTGRES_INTEGER_MAXIMO,
+  validarEnumOpcional,
+  validarId,
+  validarPaginacao,
+} from './consultaParametrosService.js';
 import { resolverPesquisadorAutenticado } from './pesquisadorAutenticadoService.js';
 
 const CAMPOS_TEXTO_GRUPO = ['nome', 'linkDgp'];
+const ORDENS_GRUPO = ['projetos', 'membros', 'recentes', 'nome'];
 
 export async function listar(filtros) {
   const paginacao = validarPaginacao(filtros);
+  const ordem = validarEnumOpcional(
+    filtros.ordem,
+    ORDENS_GRUPO,
+    'A ordem deve ser projetos, membros, recentes ou nome.',
+  ) ?? 'projetos';
   const resultado = await repositorioGrupos.listar({
     busca: filtros.busca,
+    ordem,
     limite: paginacao.limite,
     deslocamento: paginacao.deslocamento,
   });
 
   return {
     grupos: resultado.itens,
+    resumo: resultado.resumo,
     paginacao: {
       pagina: paginacao.pagina,
       porPagina: paginacao.porPagina,

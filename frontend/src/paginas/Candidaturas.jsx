@@ -18,7 +18,7 @@ export function Candidaturas() {
   const [vagas, setVagas] = useState([]);
   const [paginacao, setPaginacao] = useState(null);
   const [pagina, setPagina] = useState(1);
-  const [idVaga, setIdVaga] = useState('');
+  const [idVaga, setIdVaga] = useState(() => new URLSearchParams(window.location.search).get('vaga') ?? '');
   const [idAlunoAdmin, setIdAlunoAdmin] = useState('');
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(true);

@@ -7,6 +7,7 @@ export async function listar(req, res) {
   res.json({
     vagas: listaDeVagasResposta(resultado.vagas),
     paginacao: resultado.paginacao,
+    resumo: resultado.resumo,
   });
 }
 

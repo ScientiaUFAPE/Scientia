@@ -5,7 +5,7 @@ const semAviso = () => {};
 
 export const PainelRapidoContexto = createContext(semAviso);
 
-export function PainelRapido({ rotulo, titulo, fatos = [], acoes, paginaCompleta, aoFechar }) {
+export function PainelRapido({ rotulo, titulo, avatar, fatos = [], acoes, paginaCompleta, aoFechar }) {
   const avisar = useContext(PainelRapidoContexto);
 
   useEffect(() => {
@@ -45,7 +45,10 @@ export function PainelRapido({ rotulo, titulo, fatos = [], acoes, paginaCompleta
           </button>
         </div>
 
-        <h2 className="painel-rapido__titulo">{titulo}</h2>
+        <div className="painel-rapido__identidade">
+          {avatar && <span className="avatar painel-rapido__avatar">{avatar}</span>}
+          <h2 className="painel-rapido__titulo">{titulo}</h2>
+        </div>
 
         {fatos.length > 0 && (
           <dl>

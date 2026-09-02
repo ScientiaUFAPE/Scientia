@@ -139,6 +139,11 @@ const grupoComputacaoFixture = {
   anoCriacao: 2015,
   totalProjetos: 1,
   totalMembros: 2,
+  lider: 'Zuleica Souza',
+  membrosPrevia: [
+    { id: 91, nome: 'Zuleica Souza' },
+    { id: 104, nome: 'Bruno Lima' },
+  ],
 };
 
 const pesquisadorZuleicaFixture = {
@@ -147,6 +152,8 @@ const pesquisadorZuleicaFixture = {
   vinculo: 'docente',
   numeroLattes: '1234567890123456',
   totalPublicacoes: 2,
+  ultimaPublicacao: 2025,
+  grupoPrincipal: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
 };
 
 describe('API', () => {
@@ -699,6 +706,12 @@ describe('Acervo público', () => {
     assert.deepStrictEqual(lista.body, {
       grupos: [grupoComputacaoFixture],
       paginacao: { pagina: 1, porPagina: 20, total: 1 },
+      resumo: {
+        totalGrupos: 2,
+        totalProjetos: 2,
+        totalMembros: 3,
+        maiorTotalProjetos: 1,
+      },
     });
     assert.strictEqual(detalhe.status, 200);
     assert.deepStrictEqual(detalhe.body, {
@@ -723,6 +736,11 @@ describe('Acervo público', () => {
     assert.deepStrictEqual(resposta.body, {
       pesquisadores: [pesquisadorZuleicaFixture],
       paginacao: { pagina: 1, porPagina: 20, total: 1 },
+      resumo: {
+        totalPesquisadores: 3,
+        totalAutorias: 6,
+        porVinculo: { docente: 1, discente: 1, externo: 1 },
+      },
     });
     assert.strictEqual(Object.hasOwn(resposta.body.pesquisadores[0], 'email'), false);
   });
@@ -747,6 +765,18 @@ describe('Acervo público', () => {
       nome: 'Zuleica Souza',
       vinculo: 'docente',
       numeroLattes: '1234567890123456',
+      totalPublicacoes: 2,
+      ultimaPublicacao: 2025,
+      grupos: [
+        { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada', papel: 'lider' },
+      ],
+      areasFrequentes: [
+        { id: 2, nome: 'Agronomia', quantidade: 1 },
+        { id: 1, nome: 'Ciência da Computação', quantidade: 1 },
+      ],
+      projetosEmAndamento: [
+        { id: 3, titulo: 'Inteligência artificial aplicada ao Agreste' },
+      ],
     });
     assert.strictEqual(Object.hasOwn(resposta.body, 'email'), false);
     assert.strictEqual(Object.hasOwn(resposta.body, 'idConta'), false);

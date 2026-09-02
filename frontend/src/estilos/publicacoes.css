@@ -324,6 +324,10 @@ button.linha-acervo:hover,
   font-variant-numeric: tabular-nums;
 }
 
+.cabecalho-acervo__acao {
+  margin-left: auto;
+}
+
 .busca-alta {
   display: flex;
   align-items: center;
@@ -469,6 +473,12 @@ button.linha-acervo:hover,
   font-variant-numeric: tabular-nums;
 }
 
+.filtros-pilulas__rotulo {
+  margin-right: 2px;
+  font-size: 13px;
+  color: var(--mudo);
+}
+
 .pilula {
   display: inline-flex;
   align-items: center;
@@ -608,4 +618,247 @@ button.pilula:hover {
 .linha-publicacao__doi:hover {
   background-color: rgba(27, 35, 49, 0.05);
   color: var(--tinta);
+}
+
+/* ---- Explorar e participar ---- */
+
+.linha-exploracao__corpo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.linha-exploracao__titulo {
+  min-width: 0;
+  font-weight: 500;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-underline-offset: 3px;
+}
+
+a.linha-exploracao__titulo:hover,
+.linha-exploracao__link:hover {
+  color: var(--tinta);
+  text-decoration: underline;
+}
+
+.linha-exploracao__subtitulo {
+  min-width: 0;
+  color: var(--mudo);
+  font-size: 12.5px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.linha-exploracao__link {
+  color: var(--mudo-forte);
+  text-underline-offset: 3px;
+}
+
+.acao-icone {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--mudo);
+}
+
+.acao-icone:hover {
+  color: var(--tinta);
+  background-color: rgba(27, 35, 49, 0.05);
+}
+
+.linha-grupo__projetos {
+  flex: none;
+  width: 214px;
+  display: grid;
+  grid-template-columns: 120px 84px;
+  align-items: center;
+  gap: 10px;
+  color: var(--mudo);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.barra-progresso {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background-color: var(--preenche);
+}
+
+.barra-progresso > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background-color: var(--acento);
+}
+
+.linha-grupo__membros {
+  flex: none;
+  width: 120px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mudo);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.linha-grupo__membros .pilha-autores {
+  padding-left: 7px;
+}
+
+.linha-pesquisador,
+.linha-edital {
+  cursor: pointer;
+}
+
+.linha-pesquisador:hover,
+.linha-edital:hover {
+  border-color: #dcdce0;
+  background-color: #fcfcfd;
+}
+
+.linha-pesquisador__dado,
+.linha-edital__dado,
+.linha-vaga__dado {
+  flex: none;
+  width: 110px;
+  text-align: right;
+  color: var(--mudo);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.linha-edital__dado:last-child,
+.linha-vaga__dado:first-of-type {
+  width: 130px;
+}
+
+.linha-vaga {
+  align-items: center;
+  gap: 13px;
+}
+
+.linha-vaga__quantidade {
+  flex: none;
+  width: 64px;
+  text-align: right;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.botao--linha {
+  flex: none;
+  height: 30px;
+  padding: 0 0.6rem;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.linha-acervo__acoes--gestao {
+  z-index: 2;
+}
+
+.link-externo {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-underline-offset: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+.link-externo:hover {
+  text-decoration: underline;
+}
+
+.painel-lista-links {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.painel-lista-links a {
+  text-underline-offset: 3px;
+}
+
+.painel-lista-links a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 1180px) {
+  .linha-grupo__projetos {
+    width: 100px;
+    display: block;
+  }
+
+  .linha-grupo__projetos .barra-progresso {
+    display: none;
+  }
+
+  .linha-vaga__dado,
+  .linha-pesquisador__dado:last-of-type,
+  .linha-edital__dado:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .layout__conteudo {
+    padding-top: 32px;
+  }
+
+  .cabecalho-acervo__acao {
+    margin-left: 0;
+  }
+
+  .filtros-pilulas__resumo {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .linha-grupo__membros,
+  .linha-pesquisador__dado,
+  .linha-edital__dado,
+  .linha-vaga__quantidade {
+    display: none;
+  }
+
+  .linha-grupo,
+  .linha-vaga {
+    height: auto;
+    min-height: 58px;
+    flex-wrap: wrap;
+  }
+
+  .linha-acervo__acoes--gestao {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .linha-grupo__projetos {
+    display: none;
+  }
+
+  .linha-vaga .botao--linha,
+  .linha-vaga .etiqueta {
+    margin-left: auto;
+  }
 }

@@ -3,10 +3,16 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Pesquisadores } from '../paginas/Pesquisadores.jsx';
+import * as grupoService from '../servicos/grupoService.js';
 import * as pesquisadorService from '../servicos/pesquisadorService.js';
-import { RESPOSTA_PESQUISADORES } from './fixturesAcervo.js';
+import { RESPOSTA_GRUPOS, RESPOSTA_PESQUISADORES } from './fixturesAcervo.js';
 
 vi.mock('../servicos/pesquisadorService.js', () => ({
+  listar: vi.fn(),
+  obterPorId: vi.fn(),
+}));
+
+vi.mock('../servicos/grupoService.js', () => ({
   listar: vi.fn(),
 }));
 
@@ -22,6 +28,13 @@ describe('Tela de pesquisadores', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     pesquisadorService.listar.mockResolvedValue(RESPOSTA_PESQUISADORES);
+    pesquisadorService.obterPorId.mockResolvedValue({
+      ...RESPOSTA_PESQUISADORES.pesquisadores[0],
+      grupos: RESPOSTA_GRUPOS.grupos,
+      areasFrequentes: [{ id: 1, nome: 'Ciência da Computação' }],
+      projetosEmAndamento: [],
+    });
+    grupoService.listar.mockResolvedValue(RESPOSTA_GRUPOS);
   });
 
   afterEach(() => {
@@ -36,32 +49,34 @@ describe('Tela de pesquisadores', () => {
     expect(pesquisadorService.listar).toHaveBeenLastCalledWith({
       busca: '',
       vinculo: '',
+      idGrupo: '',
       pagina: 1,
       porPagina: 20,
     });
 
-    const linha = screen.getByText('Ana Souza').closest('button');
+    const linha = screen.getByText('Ana Souza').closest('[role="button"]');
 
     expect(within(linha).getByText('AS')).toBeInTheDocument();
-    expect(within(linha).getByText('Docente')).toBeInTheDocument();
     expect(within(linha).getByText('12 publicações')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Docentes' })).toBeInTheDocument();
 
-    const outra = screen.getByText('Bruno Lima').closest('button');
+    const outra = screen.getByText('Bruno Lima').closest('[role="button"]');
 
-    expect(within(outra).getByText('Discente')).toBeInTheDocument();
     expect(within(outra).getByText('3 publicações')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Discentes' })).toBeInTheDocument();
   });
 
   it('o filtro de vínculo volta para a primeira página e chega no serviço', async () => {
     renderizar();
     await act(async () => {});
 
-    fireEvent.change(screen.getByLabelText('Vínculo'), { target: { value: 'discente' } });
+    fireEvent.click(screen.getByRole('button', { name: /Discente 1/ }));
     await act(async () => {});
 
     expect(pesquisadorService.listar).toHaveBeenLastCalledWith({
       busca: '',
       vinculo: 'discente',
+      idGrupo: '',
       pagina: 1,
       porPagina: 20,
     });
@@ -72,6 +87,7 @@ describe('Tela de pesquisadores', () => {
     await act(async () => {});
 
     fireEvent.click(screen.getByText('Ana Souza'));
+    await act(async () => {});
 
     const painel = screen.getByRole('complementary');
 

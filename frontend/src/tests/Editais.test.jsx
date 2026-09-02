@@ -33,9 +33,10 @@ describe('Tela de editais', () => {
 
     expect(editalService.listar).toHaveBeenCalledWith({ comProjetos: 1 });
 
+    const secao2022 = screen.getByRole('heading', { name: '2022' }).closest('section');
     const linha = screen.getByText('Edital Universal nº 03/2022').closest('button');
 
-    expect(within(linha).getByText('2022')).toBeInTheDocument();
+    expect(within(secao2022).getByText('1 edital')).toBeInTheDocument();
     expect(
       within(linha).getByText('Grupo de Pesquisa em Computação Aplicada +1'),
     ).toBeInTheDocument();
