@@ -639,14 +639,26 @@ describe('Acervo público', () => {
   it('/api/projetos lista projetos com filtros', async () => {
     const status = await request(app).get('/api/projetos?status=em_andamento');
     const idGrupo = await request(app).get('/api/projetos?idGrupo=2');
+    const buscaPorGrupo = await request(app).get('/api/projetos?busca=Computação');
+    const buscaPorArea = await request(app).get('/api/projetos?busca=Ciência');
 
     assert.strictEqual(status.status, 200);
     assert.deepStrictEqual(status.body, {
       projetos: [projetoComputacaoFixture],
       paginacao: { pagina: 1, porPagina: 20, total: 1 },
+      resumo: {
+        totalProjetos: 2,
+        emAndamento: 1,
+        planejados: 0,
+        concluidos: 1,
+        cancelados: 0,
+        totalGrupos: 2,
+      },
     });
     assert.strictEqual(idGrupo.status, 200);
     assert.deepStrictEqual(idGrupo.body.projetos, [projetoComputacaoFixture]);
+    assert.deepStrictEqual(buscaPorGrupo.body.projetos, [projetoComputacaoFixture]);
+    assert.deepStrictEqual(buscaPorArea.body.projetos, [projetoComputacaoFixture]);
   });
 
   it('/api/projetos/:id retorna detalhe com edital, equipe, áreas e publicações', async () => {

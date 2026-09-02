@@ -3,7 +3,7 @@ import { montarPadraoBusca } from './buscaTextual.js';
 
 export async function listar({ busca, status, idGrupo, idArea, limite, deslocamento }) {
   const { clausula, parametros } = montarFiltros({ busca, status, idGrupo, idArea });
-  const total = await contar(clausula, parametros);
+  const [total, resumo] = await Promise.all([contar(clausula, parametros), obterResumo()]);
   const parametrosLista = [...parametros, limite, deslocamento];
   const indiceLimite = parametrosLista.length - 1;
   const indiceDeslocamento = parametrosLista.length;
@@ -27,7 +27,13 @@ export async function listar({ busca, status, idGrupo, idArea, limite, deslocame
       FROM projeto_pesquisa pr
       JOIN grupo_pesquisa g ON g.id_grupo = pr.id_grupo
       ${clausula}
-      ORDER BY pr.data_inicio DESC, pr.id_projeto DESC
+      ORDER BY CASE pr.status
+        WHEN 'em_andamento' THEN 0
+        WHEN 'planejado' THEN 1
+        WHEN 'concluido' THEN 2
+        WHEN 'cancelado' THEN 3
+        ELSE 4
+      END, pr.data_inicio DESC, pr.id_projeto DESC
       LIMIT $${indiceLimite} OFFSET $${indiceDeslocamento}
     `,
     parametrosLista,
@@ -36,7 +42,7 @@ export async function listar({ busca, status, idGrupo, idArea, limite, deslocame
   const projetos = rows.map(mapearProjetoResumo);
   await preencherAreas(projetos);
 
-  return { itens: projetos, total };
+  return { itens: projetos, total, resumo };
 }
 
 export async function buscarPorId(id) {
@@ -235,7 +241,22 @@ function montarFiltros({ busca, status, idGrupo, idArea }) {
 
   if (busca) {
     parametros.push(montarPadraoBusca(busca));
-    filtros.push(String.raw`pr.titulo ILIKE $${parametros.length} ESCAPE '\'`);
+    filtros.push(String.raw`(
+      pr.titulo ILIKE $${parametros.length} ESCAPE '\'
+      OR EXISTS (
+        SELECT 1
+        FROM grupo_pesquisa g_busca
+        WHERE g_busca.id_grupo = pr.id_grupo
+          AND g_busca.nome_grupo ILIKE $${parametros.length} ESCAPE '\'
+      )
+      OR EXISTS (
+        SELECT 1
+        FROM possui_area pa_busca
+        JOIN area_conhecimento ac_busca ON ac_busca.id_area = pa_busca.id_area
+        WHERE pa_busca.id_projeto = pr.id_projeto
+          AND ac_busca.nome_area ILIKE $${parametros.length} ESCAPE '\'
+      )
+    )`);
   }
 
   if (status) {
@@ -263,6 +284,31 @@ function montarFiltros({ busca, status, idGrupo, idArea }) {
   return {
     clausula: filtros.length ? `WHERE ${filtros.join(' AND ')}` : '',
     parametros,
+  };
+}
+
+async function obterResumo() {
+  const { rows } = await consultar(
+    `
+      SELECT
+        COUNT(*)::int AS total_projetos,
+        COUNT(*) FILTER (WHERE status = 'em_andamento')::int AS em_andamento,
+        COUNT(*) FILTER (WHERE status = 'planejado')::int AS planejados,
+        COUNT(*) FILTER (WHERE status = 'concluido')::int AS concluidos,
+        COUNT(*) FILTER (WHERE status = 'cancelado')::int AS cancelados,
+        COUNT(DISTINCT id_grupo)::int AS total_grupos
+      FROM projeto_pesquisa
+    `,
+  );
+  const linha = rows[0];
+
+  return {
+    totalProjetos: linha.total_projetos,
+    emAndamento: linha.em_andamento,
+    planejados: linha.planejados,
+    concluidos: linha.concluidos,
+    cancelados: linha.cancelados,
+    totalGrupos: linha.total_grupos,
   };
 }
 
