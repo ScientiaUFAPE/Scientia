@@ -300,6 +300,7 @@ precisa aparecer na vitrine mesmo sem nunca ter criado conta.
 | GET    | `/api/relatorios/projetos` | Público                       |
 | GET    | `/api/relatorios/publicacoes` | Público                    |
 | GET    | `/api/relatorios/grupos`   | Público                       |
+| GET    | `/api/relatorios/indicadores-producoes` | Público          |
 
 A lista de rotas públicas (as que passam sem token) fica centralizada em
 `backend/src/config/seguranca.js`; qualquer rota fora dela exige o cabeçalho

@@ -818,14 +818,28 @@ describe('Acervo público', () => {
 describe('Indicadores de produções científicas', () => {
   beforeEach(reiniciarCenarioAcervoTeste);
 
-  it('exige autenticação para consultar os indicadores', async () => {
+  it('consulta os indicadores publicamente, sem token', async () => {
     const resposta = await request(app).get('/api/relatorios/indicadores-producoes');
 
-    assert.strictEqual(resposta.status, 401);
-    assert.strictEqual(
-      resposta.body.mensagem,
-      'Envie o token de acesso no cabeçalho Authorization.',
-    );
+    assert.strictEqual(resposta.status, 200);
+    assert.deepStrictEqual(resposta.body.indicadores, {
+      totalProducoes: 3,
+      porAno: [
+        { ano: 2023, quantidade: 1 },
+        { ano: 2024, quantidade: 1 },
+        { ano: 2025, quantidade: 1 },
+      ],
+      porTipo: [
+        { tipo: 'artigo', quantidade: 1 },
+        { tipo: 'capitulo', quantidade: 1 },
+        { tipo: 'resumo', quantidade: 1 },
+      ],
+      porArea: [
+        { idArea: 1, nome: 'Ciência da Computação', quantidade: 2 },
+        { idArea: 2, nome: 'Agronomia', quantidade: 1 },
+      ],
+      areasDestaque: [{ idArea: 1, nome: 'Ciência da Computação', quantidade: 2 }],
+    });
   });
 
   it('consolida produções por ano, tipo e área sem inflar contagens por autoria', async () => {

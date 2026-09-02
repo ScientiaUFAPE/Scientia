@@ -16,6 +16,7 @@ const ROTAS_PUBLICAS = [
   { metodo: 'GET', caminho: '/api/relatorios/projetos' },
   { metodo: 'GET', caminho: '/api/relatorios/publicacoes' },
   { metodo: 'GET', caminho: '/api/relatorios/grupos' },
+  { metodo: 'GET', caminho: '/api/relatorios/indicadores-producoes' },
   { metodo: 'POST', caminho: '/api/auth/cadastro' },
   { metodo: 'POST', caminho: '/api/auth/login' },
 ];
