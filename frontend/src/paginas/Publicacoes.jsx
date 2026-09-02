@@ -328,27 +328,33 @@ export function Publicacoes({ idPesquisadorFixo }) {
             </a>
           )}
 
-          <div className="acoes-registro">
-            <Link className="botao botao--discreto" to={`/publicacoes/${selecionada.id}`}>
-              Abrir publicação
-            </Link>
-            {podeCadastrarNoAcervo(usuario) && (
-              <>
-                <Link className="botao botao--discreto" to={`/publicacoes/${selecionada.id}/editar`}>
-                  Editar
-                </Link>
-                <button
-                  type="button"
-                  className="botao botao--discreto"
-                  onClick={() => excluirPublicacao(selecionada)}
-                >
-                  Excluir
-                </button>
-              </>
-            )}
-          </div>
+          <AcoesDaPublicacao
+            publicacao={selecionada}
+            usuario={usuario}
+            aoExcluir={excluirPublicacao}
+          />
         </aside>
       )}
     </section>
+  );
+}
+
+function AcoesDaPublicacao({ publicacao, usuario, aoExcluir }) {
+  return (
+    <div className="acoes-registro">
+      <Link className="botao botao--discreto" to={`/publicacoes/${publicacao.id}`}>
+        Abrir publicação
+      </Link>
+      {podeCadastrarNoAcervo(usuario) && (
+        <>
+          <Link className="botao botao--discreto" to={`/publicacoes/${publicacao.id}/editar`}>
+            Editar
+          </Link>
+          <button type="button" className="botao botao--discreto" onClick={() => aoExcluir(publicacao)}>
+            Excluir
+          </button>
+        </>
+      )}
+    </div>
   );
 }
