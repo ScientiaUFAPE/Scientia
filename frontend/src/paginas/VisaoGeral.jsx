@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import * as editalService from '../servicos/editalService.js';
+import * as grupoService from '../servicos/grupoService.js';
+import * as pesquisadorService from '../servicos/pesquisadorService.js';
+import * as projetoService from '../servicos/projetoService.js';
 import * as publicacaoService from '../servicos/publicacaoService.js';
 import * as relatorioService from '../servicos/relatorioService.js';
 import * as vagaService from '../servicos/vagaService.js';
@@ -10,13 +13,18 @@ import {
   montarAgora,
   percentualRelativo,
   periodoDosAnos,
+  ROTULOS_STATUS,
   ROTULOS_TIPO,
+  siglaDaArea,
 } from '../utils/acervo.js';
 
 const AREAS_VISIVEIS = 8;
+const PROJETOS_VISIVEIS = 5;
 const SEM_PUBLICACOES = { publicacoes: [] };
 const SEM_VAGAS = { vagas: [], paginacao: { total: 0 } };
 const SEM_EDITAIS = { editais: [] };
+const SEM_TOTAL = { paginacao: { total: null } };
+const SEM_PROJETOS = { projetos: [], paginacao: { total: null } };
 const FORMATADOR_MES_ANO = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' });
 
 export function VisaoGeral({ dataAtual = new Date() }) {
@@ -26,6 +34,11 @@ export function VisaoGeral({ dataAtual = new Date() }) {
   const [vagas, setVagas] = useState([]);
   const [totalVagas, setTotalVagas] = useState(0);
   const [editais, setEditais] = useState([]);
+  const [totalProjetos, setTotalProjetos] = useState(null);
+  const [totalGrupos, setTotalGrupos] = useState(null);
+  const [totalPesquisadores, setTotalPesquisadores] = useState(null);
+  const [emAndamento, setEmAndamento] = useState([]);
+  const [totalEmAndamento, setTotalEmAndamento] = useState(null);
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(true);
 
@@ -55,6 +68,33 @@ export function VisaoGeral({ dataAtual = new Date() }) {
         setTotalVagas(dados.paginacao.total);
       });
 
+    projetoService
+      .listar({ porPagina: 1 })
+      .catch(() => SEM_TOTAL)
+      .then((dados) => atual && setTotalProjetos(dados.paginacao.total));
+
+    grupoService
+      .listar({ porPagina: 1 })
+      .catch(() => SEM_TOTAL)
+      .then((dados) => atual && setTotalGrupos(dados.paginacao.total));
+
+    pesquisadorService
+      .listar({ porPagina: 1 })
+      .catch(() => SEM_TOTAL)
+      .then((dados) => atual && setTotalPesquisadores(dados.paginacao.total));
+
+    projetoService
+      .listar({ status: 'em_andamento', porPagina: PROJETOS_VISIVEIS })
+      .catch(() => SEM_PROJETOS)
+      .then((dados) => {
+        if (!atual) {
+          return;
+        }
+
+        setEmAndamento(dados.projetos);
+        setTotalEmAndamento(dados.paginacao.total);
+      });
+
     editalService
       .listar()
       .catch(() => SEM_EDITAIS)
@@ -77,18 +117,31 @@ export function VisaoGeral({ dataAtual = new Date() }) {
 
   return (
     <section className="visao-geral">
-      <p className="rotulo">Panorama · {FORMATADOR_MES_ANO.format(dataAtual)}</p>
+      <div className="abertura">
+        <div className="abertura__frase">
+          <p className="rotulo">Panorama · {FORMATADOR_MES_ANO.format(dataAtual)}</p>
+
+          {indicadores && (
+            <Sintese
+              indicadores={indicadores}
+              totalVagas={totalVagas}
+              totalEditais={editais.length}
+              anoAtual={anoAtual}
+            />
+          )}
+        </div>
+
+        {indicadores && (
+          <Totais
+            totalProducoes={indicadores.totalProducoes}
+            totalProjetos={totalProjetos}
+            totalGrupos={totalGrupos}
+            totalPesquisadores={totalPesquisadores}
+          />
+        )}
+      </div>
 
       {erro && <p className="alerta alerta--erro">{erro}</p>}
-
-      {indicadores && (
-        <Sintese
-          indicadores={indicadores}
-          totalVagas={totalVagas}
-          totalEditais={editais.length}
-          anoAtual={anoAtual}
-        />
-      )}
 
       {indicadores && indicadores.totalProducoes > 0 && (
         <div className="editorial">
@@ -96,6 +149,12 @@ export function VisaoGeral({ dataAtual = new Date() }) {
           <Apoio indicadores={indicadores} />
         </div>
       )}
+
+      <EmAndamento
+        projetos={emAndamento}
+        totalEmAndamento={totalEmAndamento}
+        totalProjetos={totalProjetos}
+      />
 
       <div className="colunas">
         <Recentes publicacoes={recentes} totalProducoes={indicadores?.totalProducoes} />
@@ -140,6 +199,85 @@ function Sintese({ indicadores, totalVagas, totalEditais, anoAtual }) {
   );
 }
 
+function Totais({ totalProducoes, totalProjetos, totalGrupos, totalPesquisadores }) {
+  const itens = [
+    { rotulo: 'Produções', quantidade: totalProducoes, para: '/publicacoes' },
+    { rotulo: 'Projetos', quantidade: totalProjetos, para: '/projetos' },
+    { rotulo: 'Grupos', quantidade: totalGrupos, para: '/grupos' },
+    { rotulo: 'Pesquisadores', quantidade: totalPesquisadores, para: '/pesquisadores' },
+  ];
+
+  return (
+    <div className="totais">
+      {itens.map((item) => (
+        <Link className="totais__item" key={item.rotulo} to={item.para}>
+          <span className="totais__rotulo">{item.rotulo}</span>
+          <span className="totais__valor">
+            {typeof item.quantidade === 'number' ? item.quantidade : '—'}
+          </span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function EmAndamento({ projetos, totalEmAndamento, totalProjetos }) {
+  const contados = typeof totalEmAndamento === 'number' && typeof totalProjetos === 'number';
+
+  return (
+    <section>
+      <div className="secao__topo">
+        <span className="rotulo">Projetos em andamento</span>
+
+        {contados && (
+          <span className="secao__nota">
+            {totalEmAndamento} de {totalProjetos}{' '}
+            {totalProjetos === 1 ? 'projeto' : 'projetos'}
+          </span>
+        )}
+
+        <Link className="secao__extra ligacao" to="/projetos">
+          Ver todos os projetos
+        </Link>
+      </div>
+
+      {projetos.length === 0 ? (
+        <p className="secao__vazio">Nenhum projeto em andamento.</p>
+      ) : (
+        <ul className="lista-acervo">
+          {projetos.map((projeto) => (
+            <li className="linha-acervo linha-acervo--navega" key={projeto.id}>
+              <span className="selo-sigla">{siglaDaArea(projeto.areas?.[0]?.nome)}</span>
+
+              <Link
+                className="linha-acervo__titulo linha-acervo__alvo"
+                to={`/projetos/${projeto.id}`}
+              >
+                {projeto.titulo}
+              </Link>
+
+              <span className="linha-acervo__grupo">{projeto.grupo?.nome}</span>
+
+              <span className="linha-acervo__meta linha-acervo__meta--medida">
+                desde {projeto.dataInicio?.slice(0, 4)}
+              </span>
+
+              <span className="linha-acervo__meta linha-acervo__meta--medida">
+                {projeto.totalPublicacoes}{' '}
+                {projeto.totalPublicacoes === 1 ? 'publicação' : 'publicações'}
+              </span>
+
+              <span className="etiqueta etiqueta--situacao etiqueta--em_andamento">
+                {ROTULOS_STATUS.em_andamento}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 function Ranking({ indicadores }) {
   const [todas, setTodas] = useState(false);
   const maior = Math.max(...indicadores.porArea.map((area) => area.quantidade), 0);
@@ -159,6 +297,7 @@ function Ranking({ indicadores }) {
       <div className="ranking">
         {areas.map((area) => (
           <div className="rank" key={area.idArea}>
+            <span className="selo-sigla">{siglaDaArea(area.nome)}</span>
             <span className="rank__nome">{area.nome}</span>
             <span className="rank__trilha">
               <span

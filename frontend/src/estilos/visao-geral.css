@@ -13,9 +13,51 @@
   color: var(--mudo-forte);
 }
 
+.abertura {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: 44px;
+  align-items: end;
+}
+
+.abertura__frase {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.totais {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 32px;
+  border-top: 1px solid var(--fio);
+}
+
+.totais__item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--fio);
+}
+
+.totais__rotulo {
+  font-size: 13px;
+  color: var(--mudo-forte);
+}
+
+.totais__valor {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
 .sintese {
   margin: 0;
-  max-width: 41ch;
+  max-width: 38ch;
   font-size: 31px;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -47,6 +89,11 @@
 
 .secao__extra {
   margin-left: auto;
+  font-size: 13px;
+  color: var(--mudo-forte);
+}
+
+.secao__nota {
   font-size: 13px;
   color: var(--mudo-forte);
 }
@@ -104,9 +151,24 @@
   flex-direction: column;
 }
 
+.selo-sigla {
+  width: 28px;
+  height: 28px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--fio);
+  border-radius: 8px;
+  background-color: var(--rail);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--mudo-forte);
+}
+
 .rank {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 160px 40px 64px;
+  grid-template-columns: 28px minmax(0, 1fr) 160px 40px 64px;
   align-items: center;
   gap: 12px;
   min-height: 38px;
@@ -245,6 +307,7 @@
 }
 
 @media (max-width: 1100px) {
+  .abertura,
   .editorial,
   .colunas {
     grid-template-columns: minmax(0, 1fr);
@@ -252,6 +315,6 @@
   }
 
   .rank {
-    grid-template-columns: minmax(0, 1fr) 120px 40px 64px;
+    grid-template-columns: 28px minmax(0, 1fr) 120px 40px 64px;
   }
 }

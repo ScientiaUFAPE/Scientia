@@ -4,11 +4,17 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { VisaoGeral } from '../paginas/VisaoGeral.jsx';
 import * as editalService from '../servicos/editalService.js';
+import * as grupoService from '../servicos/grupoService.js';
+import * as pesquisadorService from '../servicos/pesquisadorService.js';
+import * as projetoService from '../servicos/projetoService.js';
 import * as publicacaoService from '../servicos/publicacaoService.js';
 import * as relatorioService from '../servicos/relatorioService.js';
 import * as vagaService from '../servicos/vagaService.js';
 
 vi.mock('../servicos/editalService.js', () => ({ listar: vi.fn() }));
+vi.mock('../servicos/grupoService.js', () => ({ listar: vi.fn() }));
+vi.mock('../servicos/pesquisadorService.js', () => ({ listar: vi.fn() }));
+vi.mock('../servicos/projetoService.js', () => ({ listar: vi.fn() }));
 vi.mock('../servicos/publicacaoService.js', () => ({ listar: vi.fn() }));
 vi.mock('../servicos/relatorioService.js', () => ({ obterIndicadoresProducoes: vi.fn() }));
 vi.mock('../servicos/vagaService.js', () => ({ listar: vi.fn() }));
@@ -99,6 +105,34 @@ const CINCO_EDITAIS = {
   })),
 };
 
+const TOTAL_PROJETOS = { projetos: [], paginacao: { pagina: 1, porPagina: 1, total: 120 } };
+const TOTAL_GRUPOS = { grupos: [], paginacao: { pagina: 1, porPagina: 1, total: 55 } };
+const TOTAL_PESQUISADORES = {
+  pesquisadores: [],
+  paginacao: { pagina: 1, porPagina: 1, total: 80 },
+};
+
+const EM_ANDAMENTO = {
+  projetos: Array.from({ length: 5 }, (_, indice) => ({
+    id: indice + 1,
+    titulo: `Projeto ${indice + 1}`,
+    status: 'em_andamento',
+    dataInicio: '2024-03-01',
+    grupo: { id: 2, nome: 'Grupo de Pesquisa em Computação Aplicada' },
+    areas: [{ id: 1, nome: 'Ciência da Computação' }],
+    totalPublicacoes: indice + 1,
+  })),
+  paginacao: { pagina: 1, porPagina: 5, total: 60 },
+};
+
+const SEM_EM_ANDAMENTO = { projetos: [], paginacao: { pagina: 1, porPagina: 5, total: 0 } };
+
+function responderProjetos(emAndamento = EM_ANDAMENTO) {
+  projetoService.listar.mockImplementation((filtros) =>
+    Promise.resolve(filtros.status === 'em_andamento' ? emAndamento : TOTAL_PROJETOS),
+  );
+}
+
 const VINTE_E_QUATRO_AREAS = Array.from({ length: 24 }, (_, indice) => ({
   idArea: indice + 1,
   nome: `Área ${indice + 1}`,
@@ -117,12 +151,19 @@ function frase() {
   return screen.getByRole('heading', { level: 1 }).textContent;
 }
 
+function total(rotulo) {
+  return screen.getByText(rotulo, { selector: '.totais__rotulo' }).closest('.totais__item');
+}
+
 describe('Visão geral', () => {
   beforeEach(() => {
     relatorioService.obterIndicadoresProducoes.mockResolvedValue({ indicadores: INDICADORES });
     publicacaoService.listar.mockResolvedValue(RECENTES);
     vagaService.listar.mockResolvedValue(VAGAS);
     editalService.listar.mockResolvedValue(EDITAIS);
+    grupoService.listar.mockResolvedValue(TOTAL_GRUPOS);
+    pesquisadorService.listar.mockResolvedValue(TOTAL_PESQUISADORES);
+    responderProjetos();
   });
 
   afterEach(() => {
@@ -169,6 +210,80 @@ describe('Visão geral', () => {
 
     expect(frase()).toContain('Ciência da Computação e Agronomia empatadas na liderança');
     expect(screen.getAllByText('destaque')).toHaveLength(2);
+  });
+
+  it('traz os totais do acervo ao lado da frase-síntese', async () => {
+    renderizarTela();
+    await act(async () => {});
+
+    expect(projetoService.listar).toHaveBeenCalledWith({ porPagina: 1 });
+    expect(grupoService.listar).toHaveBeenCalledWith({ porPagina: 1 });
+    expect(pesquisadorService.listar).toHaveBeenCalledWith({ porPagina: 1 });
+
+    expect(total('Produções')).toHaveAttribute('href', '/publicacoes');
+    expect(within(total('Produções')).getByText('4')).toBeInTheDocument();
+
+    expect(total('Projetos')).toHaveAttribute('href', '/projetos');
+    expect(within(total('Projetos')).getByText('120')).toBeInTheDocument();
+
+    expect(total('Grupos')).toHaveAttribute('href', '/grupos');
+    expect(within(total('Grupos')).getByText('55')).toBeInTheDocument();
+
+    expect(total('Pesquisadores')).toHaveAttribute('href', '/pesquisadores');
+    expect(within(total('Pesquisadores')).getByText('80')).toBeInTheDocument();
+  });
+
+  it('quando um total falha, mostra travessão no lugar do número e não alerta', async () => {
+    grupoService.listar.mockRejectedValue(new Error('Não foi possível listar os grupos.'));
+
+    renderizarTela();
+    await act(async () => {});
+
+    expect(within(total('Grupos')).getByText('—')).toBeInTheDocument();
+    expect(screen.queryByText('Não foi possível listar os grupos.')).not.toBeInTheDocument();
+    expect(document.querySelector('.alerta--erro')).toBeNull();
+    expect(within(total('Pesquisadores')).getByText('80')).toBeInTheDocument();
+  });
+
+  it('lista até cinco projetos em andamento com selo, grupo, início e situação', async () => {
+    renderizarTela();
+    await act(async () => {});
+
+    expect(projetoService.listar).toHaveBeenCalledWith({
+      status: 'em_andamento',
+      porPagina: 5,
+    });
+
+    const secao = screen.getByText('Projetos em andamento').closest('section');
+
+    expect(within(secao).getByText('60 de 120 projetos')).toBeInTheDocument();
+    expect(secao.querySelectorAll('.linha-acervo')).toHaveLength(5);
+    expect(within(secao).getByRole('link', { name: 'Projeto 1' })).toHaveAttribute(
+      'href',
+      '/projetos/1',
+    );
+    expect(within(secao).getAllByText('CC')).toHaveLength(5);
+    expect(within(secao).getAllByText('Grupo de Pesquisa em Computação Aplicada')).toHaveLength(5);
+    expect(within(secao).getAllByText('desde 2024')).toHaveLength(5);
+    expect(within(secao).getByText('1 publicação')).toBeInTheDocument();
+    expect(within(secao).getByText('5 publicações')).toBeInTheDocument();
+    expect(within(secao).getAllByText('Em andamento')).toHaveLength(5);
+    expect(within(secao).getByRole('link', { name: 'Ver todos os projetos' })).toHaveAttribute(
+      'href',
+      '/projetos',
+    );
+  });
+
+  it('sem projetos em andamento, mostra o aviso de lista vazia', async () => {
+    responderProjetos(SEM_EM_ANDAMENTO);
+
+    renderizarTela();
+    await act(async () => {});
+
+    const secao = screen.getByText('Projetos em andamento').closest('section');
+
+    expect(within(secao).getByText('0 de 120 projetos')).toBeInTheDocument();
+    expect(within(secao).getByText('Nenhum projeto em andamento.')).toBeInTheDocument();
   });
 
   it('lista as áreas em ranking e os apoios por ano e por tipo', async () => {

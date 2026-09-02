@@ -117,6 +117,8 @@ describe('Guarda das rotas de cadastro no App', () => {
     expect(screen.getByRole('heading', { level: 1 }).textContent).toMatch(
       /São 4 produções científicas no acervo/,
     );
+    expect(screen.getByText('Produções', { selector: '.totais__rotulo' })).toBeInTheDocument();
+    expect(screen.getByText('Projetos em andamento')).toBeInTheDocument();
   });
 
   it('a antiga rota de indicadores redireciona para a visão geral', async () => {

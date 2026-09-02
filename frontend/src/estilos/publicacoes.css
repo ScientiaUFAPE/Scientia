@@ -392,6 +392,12 @@ button.linha-acervo:hover,
   white-space: nowrap;
 }
 
+.linha-acervo__meta--medida {
+  width: 96px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
 .linha-acervo__meta--link {
   position: relative;
   color: var(--mudo-forte);
