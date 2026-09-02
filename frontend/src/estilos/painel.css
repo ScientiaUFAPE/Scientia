@@ -143,7 +143,7 @@
 }
 
 .rail__menu a:not(.active):hover {
-  background-color: var(--acento-suave);
+  background-color: var(--preenche);
   color: var(--mudo-forte);
 }
 
@@ -155,10 +155,6 @@
 
 .rail__menu a.active {
   position: relative;
-}
-
-.rail__menu a.active svg {
-  color: var(--acento-tinta);
 }
 
 .rail__menu a.active::before {

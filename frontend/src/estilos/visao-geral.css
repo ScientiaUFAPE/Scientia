@@ -25,15 +25,16 @@
 }
 
 .sintese b {
-  color: var(--acento-tinta);
+  color: var(--tinta);
   font-weight: 700;
 }
 
-.ligacao-acento {
-  color: var(--acento-tinta);
+.ligacao {
+  color: var(--tinta);
+  text-underline-offset: 3px;
 }
 
-.ligacao-acento:hover {
+.ligacao:hover {
   text-decoration: underline;
 }
 

@@ -9,9 +9,6 @@
   --mudo: #8a8a8f;
   --mudo-forte: #5d6779;
   --acento: #09d0c9;
-  --acento-tinta: #077a76;
-  --acento-suave: #e6fafa;
-  --acento-hover: #06bdb7;
   --teal: var(--acento);
 
   --erro: #b3261e;
@@ -139,16 +136,6 @@ h2 {
 
 .botao--primario:hover:not(:disabled) {
   background-color: var(--preenche-forte);
-}
-
-.botao--acento {
-  width: 100%;
-  background-color: var(--acento);
-  color: var(--tinta);
-}
-
-.botao--acento:hover:not(:disabled) {
-  background-color: var(--acento-hover);
 }
 
 .botao--discreto {

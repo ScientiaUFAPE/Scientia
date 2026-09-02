@@ -222,7 +222,7 @@ function Apoio({ indicadores }) {
         </div>
       </section>
 
-      <Link className="ligacao-acento" to="/relatorios">
+      <Link className="ligacao" to="/relatorios">
         Relatórios completos
       </Link>
     </aside>
@@ -234,7 +234,7 @@ function Recentes({ publicacoes }) {
     <section>
       <div className="secao__topo">
         <span className="rotulo">Recentes</span>
-        <Link className="secao__extra ligacao-acento" to="/publicacoes">
+        <Link className="secao__extra ligacao" to="/publicacoes">
           Ver todas as publicações
         </Link>
       </div>

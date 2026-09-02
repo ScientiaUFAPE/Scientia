@@ -61,7 +61,7 @@ export function PainelRapido({ rotulo, titulo, fatos = [], acoes, paginaCompleta
         {(paginaCompleta || acoes) && (
           <div className="painel-rapido__acoes">
             {paginaCompleta && (
-              <Link className="botao botao--acento" to={paginaCompleta}>
+              <Link className="botao botao--primario" to={paginaCompleta}>
                 Abrir página completa
               </Link>
             )}
