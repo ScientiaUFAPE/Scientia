@@ -225,6 +225,10 @@ button.linha-acervo:hover,
   color: var(--mudo);
 }
 
+.linha-acervo__avatar {
+  box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px var(--teal);
+}
+
 .linha-acervo__titulo {
   flex: 1;
   min-width: 0;
