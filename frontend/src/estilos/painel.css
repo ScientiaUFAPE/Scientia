@@ -120,33 +120,34 @@
   gap: 2px;
 }
 
-.rail__menu a,
-.rail__mais {
+.rail__grupo {
+  padding: 16px 10px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mudo-forte);
+}
+
+.rail__menu a {
   display: flex;
   align-items: center;
   gap: 11px;
   height: 40px;
   padding: 0 10px;
-  border: 0;
   border-radius: var(--raio-btn);
-  background: none;
   color: var(--mudo);
-  font: inherit;
   font-size: 13px;
   font-weight: 500;
-  text-align: left;
-  cursor: pointer;
   width: 100%;
 }
 
-.rail__menu a:not(.active):hover,
-.rail__mais:hover {
+.rail__menu a:not(.active):hover {
   background-color: var(--acento-suave);
   color: var(--mudo-forte);
 }
 
-.rail__menu a.active,
-.rail__mais[aria-expanded='true'] {
+.rail__menu a.active {
   background-color: var(--preenche);
   color: var(--tinta);
   font-weight: 600;
@@ -171,60 +172,28 @@
   background-color: var(--acento);
 }
 
-.rail__menu svg,
-.rail__mais svg {
+.rail__menu svg {
   flex: none;
 }
 
-/* Popover do "Mais" — única superfície com sombra */
-.popover {
-  background-color: var(--canvas);
-  border-radius: var(--raio-cartao);
-  box-shadow: var(--sombra-flutuante);
-  padding: 6px;
+.rail__pe {
+  margin-top: auto;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
 }
 
-.popover a {
+.rail__acesso {
   display: flex;
-  align-items: center;
-  gap: 11px;
-  height: 38px;
-  padding: 0 10px;
-  border-radius: var(--raio-btn);
-  color: var(--mudo-forte);
-  font-weight: 500;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.popover a:hover {
-  background-color: rgba(27, 35, 49, 0.04);
-}
-
-.popover__fixar {
-  margin-left: auto;
-  width: 24px;
-  height: 24px;
-  border: 0;
-  background: none;
-  border-radius: 6px;
-  color: #c4c4c8;
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-
-.popover__fixar:hover {
-  background-color: rgba(27, 35, 49, 0.06);
-}
-
-.popover__fixar--ativo {
-  color: var(--tinta);
+.rail__acesso .botao {
+  width: 100%;
 }
 
 .rail__rodape {
-  margin-top: auto;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -233,6 +202,14 @@
 }
 
 .rail__conta {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+}
+
+.rail__identidade {
   min-width: 0;
 }
 
@@ -377,8 +354,12 @@
     flex-wrap: wrap;
   }
 
-  .rail__menu a,
-  .rail__mais {
+  .rail__menu a {
     width: auto;
+  }
+
+  .rail__grupo {
+    width: 100%;
+    padding: 8px 10px 0;
   }
 }
