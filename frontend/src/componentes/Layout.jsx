@@ -1,5 +1,7 @@
+import { useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 
+import { useRolagemDiscreta } from '../utils/useRolagemDiscreta.js';
 import { BarraLateral, Glifo, ROTULOS_ROTA } from './BarraLateral.jsx';
 
 function localAtual(caminho) {
@@ -12,12 +14,15 @@ function localAtual(caminho) {
 export function Layout() {
   const { pathname } = useLocation();
   const local = localAtual(pathname);
+  const canvas = useRef(null);
+
+  useRolagemDiscreta(canvas);
 
   return (
     <div className="layout">
       <BarraLateral />
 
-      <main className="canvas">
+      <main className="canvas rolagem-discreta" ref={canvas}>
         {local && (
           <div className="barra">
             <div className="barra__local">

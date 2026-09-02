@@ -139,9 +139,9 @@
   width: 100%;
 }
 
-.rail__menu a:hover,
+.rail__menu a:not(.active):hover,
 .rail__mais:hover {
-  background-color: rgba(27, 35, 49, 0.04);
+  background-color: var(--acento-suave);
   color: var(--mudo-forte);
 }
 
@@ -150,6 +150,25 @@
   background-color: var(--preenche);
   color: var(--tinta);
   font-weight: 600;
+}
+
+.rail__menu a.active {
+  position: relative;
+}
+
+.rail__menu a.active svg {
+  color: var(--acento-tinta);
+}
+
+.rail__menu a.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 3px;
+  border-radius: 999px;
+  background-color: var(--acento);
 }
 
 .rail__menu svg,
