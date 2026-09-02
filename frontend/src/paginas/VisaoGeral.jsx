@@ -12,6 +12,7 @@ import {
   ROTULOS_TIPO,
 } from '../utils/acervo.js';
 
+const AREAS_VISIVEIS = 8;
 const SEM_PUBLICACOES = { publicacoes: [] };
 const SEM_VAGAS = { vagas: [], paginacao: { total: 0 } };
 const SEM_EDITAIS = { editais: [] };
@@ -137,21 +138,23 @@ function Sintese({ indicadores, totalVagas, totalEditais, anoAtual }) {
 }
 
 function Ranking({ indicadores }) {
+  const [todas, setTodas] = useState(false);
   const maior = Math.max(...indicadores.porArea.map((area) => area.quantidade), 0);
   const destaques = indicadores.areasDestaque.map((area) => area.idArea);
+  const total = indicadores.porArea.length;
+  const areas = todas ? indicadores.porArea : indicadores.porArea.slice(0, AREAS_VISIVEIS);
 
   return (
     <section>
       <div className="secao__topo">
         <span className="rotulo">Áreas de pesquisa</span>
         <span className="secao__extra">
-          {indicadores.porArea.length} {indicadores.porArea.length === 1 ? 'área' : 'áreas'} ·{' '}
-          {indicadores.totalProducoes} produções
+          {total} {total === 1 ? 'área' : 'áreas'} · {indicadores.totalProducoes} produções
         </span>
       </div>
 
       <div className="ranking">
-        {indicadores.porArea.map((area) => (
+        {areas.map((area) => (
           <div className="rank" key={area.idArea}>
             <span className="rank__nome">{area.nome}</span>
             <span className="rank__trilha">
@@ -167,6 +170,12 @@ function Ranking({ indicadores }) {
           </div>
         ))}
       </div>
+
+      {total > AREAS_VISIVEIS && (
+        <button className="ligacao ranking__mais" type="button" onClick={() => setTodas(!todas)}>
+          {todas ? 'Mostrar menos' : `Ver todas as ${total} áreas`}
+        </button>
+      )}
     </section>
   );
 }
@@ -176,6 +185,7 @@ function Apoio({ indicadores }) {
   const maiorTipo = Math.max(...indicadores.porTipo.map((item) => item.quantidade), 0);
   const primeiroAno = indicadores.porAno[0]?.ano;
   const ultimoAno = indicadores.porAno[indicadores.porAno.length - 1]?.ano;
+  const pico = anoDePico(indicadores.porAno);
 
   return (
     <aside className="apoio">
@@ -199,6 +209,13 @@ function Apoio({ indicadores }) {
           <span>{primeiroAno}</span>
           <span>{ultimoAno}</span>
         </div>
+
+        {pico && (
+          <p className="mini__nota">
+            Pico em {pico.ano}, com {pico.quantidade}{' '}
+            {pico.quantidade === 1 ? 'registro' : 'registros'}.
+          </p>
+        )}
       </section>
 
       <section>
@@ -316,6 +333,16 @@ function Agora({ vagas, totalVagas, editais, anoAtual }) {
       )}
     </section>
   );
+}
+
+function anoDePico(porAno) {
+  return porAno.reduce((pico, item) => {
+    if (!pico || item.quantidade > pico.quantidade) {
+      return item;
+    }
+
+    return item.quantidade === pico.quantidade && item.ano > pico.ano ? item : pico;
+  }, null);
 }
 
 function contarVagas(total) {

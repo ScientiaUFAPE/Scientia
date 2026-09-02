@@ -66,9 +66,13 @@
 
 .editorial {
   display: grid;
-  grid-template-columns: 1fr 232px;
+  grid-template-columns: minmax(0, 1fr) 232px;
   gap: 44px;
   align-items: start;
+}
+
+.editorial > * {
+  min-width: 0;
 }
 
 .apoio {
@@ -83,10 +87,11 @@
 }
 
 .rank {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 160px 40px 64px;
   align-items: center;
   gap: 12px;
-  padding: 8px 0;
+  min-height: 38px;
   border-top: 1px solid var(--fio);
 }
 
@@ -95,17 +100,18 @@
 }
 
 .rank__nome {
-  width: 214px;
-  flex: none;
+  min-width: 0;
   font-size: 14.5px;
   font-weight: 500;
   color: var(--tinta);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rank__trilha,
 .tipo-trilha {
   display: block;
-  flex: 1;
   height: 6px;
   overflow: hidden;
   background-color: var(--preenche);
@@ -121,8 +127,6 @@
 }
 
 .rank__conta {
-  width: 32px;
-  flex: none;
   text-align: right;
   font-size: 14px;
   font-weight: 600;
@@ -130,18 +134,26 @@
 }
 
 .rank__destaque {
-  width: 58px;
-  flex: none;
   font-size: 11px;
   letter-spacing: 0.02em;
   color: var(--mudo-forte);
+}
+
+.ranking__mais {
+  margin-top: 14px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .mini {
   display: flex;
   align-items: flex-end;
   gap: 4px;
-  height: 64px;
+  height: 72px;
 }
 
 .mini__col {
@@ -170,16 +182,23 @@
   font-variant-numeric: tabular-nums;
 }
 
+.mini__nota {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--mudo-forte);
+}
+
 .tipos {
   display: flex;
   flex-direction: column;
 }
 
 .tipo-linha {
-  display: flex;
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr) 32px;
   align-items: center;
   gap: 10px;
-  padding: 8px 0;
+  min-height: 38px;
   border-top: 1px solid var(--fio);
   font-size: 14px;
 }
@@ -189,13 +208,13 @@
 }
 
 .tipo-nome {
-  flex: none;
-  width: 86px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tipo-conta {
-  flex: none;
-  width: 26px;
   text-align: right;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -203,19 +222,18 @@
 
 .colunas {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 32px;
 }
 
 @media (max-width: 1100px) {
   .editorial,
   .colunas {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 28px;
   }
 
-  .rank__nome {
-    width: auto;
-    flex: 1;
+  .rank {
+    grid-template-columns: minmax(0, 1fr) 120px 40px 64px;
   }
 }

@@ -1,4 +1,4 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -69,6 +69,12 @@ const EDITAIS = {
     { id: 8, nome: 'Edital Universal nº 03/2022', ano: 2022, totalProjetos: 1 },
   ],
 };
+
+const VINTE_E_QUATRO_AREAS = Array.from({ length: 24 }, (_, indice) => ({
+  idArea: indice + 1,
+  nome: `Área ${indice + 1}`,
+  quantidade: 24 - indice,
+}));
 
 function renderizarTela() {
   return render(
@@ -144,6 +150,40 @@ describe('Visão geral', () => {
       'href',
       '/relatorios',
     );
+  });
+
+  it('mostra oito áreas e abre a lista inteira ao pedir todas', async () => {
+    relatorioService.obterIndicadoresProducoes.mockResolvedValue({
+      indicadores: {
+        ...INDICADORES,
+        porArea: VINTE_E_QUATRO_AREAS,
+        areasDestaque: [VINTE_E_QUATRO_AREAS[0]],
+      },
+    });
+
+    renderizarTela();
+    await act(async () => {});
+
+    const areas = screen.getByText('Áreas de pesquisa').closest('section');
+
+    expect(areas.querySelectorAll('.rank')).toHaveLength(8);
+    expect(within(areas).queryByText('Área 9')).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ver todas as 24 áreas' }));
+
+    expect(areas.querySelectorAll('.rank')).toHaveLength(24);
+    expect(within(areas).getByText('Área 24')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mostrar menos' }));
+
+    expect(areas.querySelectorAll('.rank')).toHaveLength(8);
+  });
+
+  it('resume a série por ano com o ano de pico', async () => {
+    renderizarTela();
+    await act(async () => {});
+
+    expect(screen.getByText('Pico em 2024, com 2 registros.')).toBeInTheDocument();
   });
 
   it('mostra as cinco recentes com link para a publicação', async () => {
