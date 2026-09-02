@@ -37,7 +37,7 @@ body {
   background-color: var(--canvas);
   color: var(--tinta);
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.5;
   letter-spacing: -0.011em;
   -webkit-font-smoothing: antialiased;

@@ -1,13 +1,13 @@
 /* Moldura: rail fixa à esquerda, canvas branco à direita. */
 .layout {
   display: grid;
-  grid-template-columns: 264px 1fr;
+  grid-template-columns: 232px 1fr;
   height: 100vh;
 }
 
 .layout__conteudo {
   width: 100%;
-  max-width: 940px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 46px 22px 80px;
 }
@@ -132,6 +132,7 @@
   background: none;
   color: var(--mudo);
   font: inherit;
+  font-size: 13px;
   font-weight: 500;
   text-align: left;
   cursor: pointer;
