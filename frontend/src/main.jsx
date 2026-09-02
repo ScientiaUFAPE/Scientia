@@ -8,6 +8,7 @@ import './estilos/global.css';
 import './estilos/indicadores.css';
 import './estilos/autenticacao.css';
 import './estilos/painel.css';
+import './estilos/painel-rapido.css';
 import './estilos/publicacoes.css';
 import './estilos/projetos.css';
 import './estilos/cadastro-acervo.css';

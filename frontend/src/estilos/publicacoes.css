@@ -264,79 +264,6 @@ button.linha-acervo:hover,
   margin-left: 0;
 }
 
-/* ---- Painel de detalhe ---- */
-
-.painel-detalhe {
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 340px;
-  height: 100vh;
-  background-color: var(--canvas);
-  border-left: 1px solid var(--fio);
-  padding: 18px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  z-index: 5;
-}
-
-body.com-painel .layout {
-  padding-right: 340px;
-}
-
-.painel-detalhe__topo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--mudo);
-}
-
-.painel-detalhe__fechar {
-  margin-left: auto;
-  width: 30px;
-  height: 30px;
-  border: 0;
-  background: none;
-  border-radius: 8px;
-  color: var(--mudo);
-  display: grid;
-  place-items: center;
-  cursor: pointer;
-}
-
-.painel-detalhe__fechar:hover {
-  background-color: rgba(27, 35, 49, 0.05);
-  color: var(--tinta);
-}
-
-.painel-detalhe__titulo {
-  font-size: 19px;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  text-wrap: balance;
-}
-
-.painel-detalhe dl {
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.painel-detalhe dt {
-  color: var(--mudo);
-  font-size: 12px;
-  margin-bottom: 4px;
-}
-
-.painel-detalhe dd {
-  margin: 0;
-  font-size: 13.5px;
-}
-
 .autor-linha {
   display: flex;
   align-items: center;
@@ -349,20 +276,6 @@ body.com-painel .layout {
   height: 24px;
   font-size: 10px;
   box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px var(--teal);
-}
-
-@media (max-width: 860px) {
-  .painel-detalhe {
-    position: static;
-    width: 100%;
-    height: auto;
-    border-left: 0;
-    border-top: 1px solid var(--fio);
-  }
-
-  body.com-painel .layout {
-    padding-right: 0;
-  }
 }
 
 .filtros-acervo--triplo {

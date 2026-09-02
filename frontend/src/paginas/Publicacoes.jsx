@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import { Paginacao } from '../componentes/Paginacao.jsx';
+import { PainelRapido } from '../componentes/PainelRapido.jsx';
 import { useAuth } from '../contexto/AuthContext.jsx';
 import * as publicacaoService from '../servicos/publicacaoService.js';
 import * as areaService from '../servicos/areaService.js';
@@ -34,12 +35,6 @@ export function Publicacoes({ idPesquisadorFixo }) {
 
   const [buscaAplicada, setBuscaAplicada] = useState('');
   const [selecionada, setSelecionada] = useState(null);
-
-  useEffect(() => {
-    document.body.classList.toggle('com-painel', Boolean(selecionada));
-
-    return () => document.body.classList.remove('com-painel');
-  }, [selecionada]);
 
   useEffect(() => {
     let atual = true;
@@ -256,105 +251,80 @@ export function Publicacoes({ idPesquisadorFixo }) {
       {!carregando && !erro && <Paginacao paginacao={paginacao} aoTrocarPagina={setPagina} />}
 
       {selecionada && (
-        <aside className="painel-detalhe">
-          <div className="painel-detalhe__topo">
-            <span className="grupo-ano__ponto" />
-            {ROTULOS_TIPO[selecionada.tipo] ?? selecionada.tipo} · {selecionada.ano}
-            <button
-              type="button"
-              className="painel-detalhe__fechar"
-              title="Fechar"
-              onClick={() => setSelecionada(null)}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7">
-                <path d="m6 6 12 12M18 6 6 18" />
-              </svg>
-            </button>
-          </div>
+        <PainelRapido
+          rotulo={`${ROTULOS_TIPO[selecionada.tipo] ?? selecionada.tipo} · ${selecionada.ano}`}
+          titulo={selecionada.titulo}
+          fatos={fatosDaPublicacao(selecionada)}
+          paginaCompleta={`/publicacoes/${selecionada.id}`}
+          aoFechar={() => setSelecionada(null)}
+          acoes={
+            <>
+              {selecionada.doi && (
+                <a
+                  className="botao botao--discreto botao--compacto"
+                  href={`https://doi.org/${selecionada.doi}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  DOI: {selecionada.doi}
+                </a>
+              )}
 
-          <h2 className="painel-detalhe__titulo">{selecionada.titulo}</h2>
-
-          <dl>
-            <div>
-              <dt>Autoria</dt>
-              <dd>
-                {ordenarAutores(selecionada.autores).map((autor) => (
-                  <span className="autor-linha" key={autor.id ?? autor.nome}>
-                    <span className="avatar">{iniciaisDoNome(autor.nome)}</span>
-                    {autor.nome}
-                  </span>
-                ))}
-              </dd>
-            </div>
-
-            <div>
-              <dt>Veículo</dt>
-              <dd>{selecionada.veiculo}</dd>
-            </div>
-
-            {selecionada.projeto && (
-              <div>
-                <dt>Projeto</dt>
-                <dd>
-                  <Link to={`/projetos/${selecionada.projeto.id}`}>
-                    {selecionada.projeto.titulo}
-                  </Link>
-                </dd>
-              </div>
-            )}
-
-            {selecionada.areas?.length > 0 && (
-              <div>
-                <dt>Áreas</dt>
-                <dd>
-                  <ul className="lista-chips">
-                    {selecionada.areas.map((area) => (
-                      <li className="chip" key={area.id}>{area.nome}</li>
-                    ))}
-                  </ul>
-                </dd>
-              </div>
-            )}
-          </dl>
-
-          {selecionada.doi && (
-            <a
-              className="botao botao--discreto botao--compacto"
-              href={`https://doi.org/${selecionada.doi}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              DOI: {selecionada.doi}
-            </a>
-          )}
-
-          <AcoesDaPublicacao
-            publicacao={selecionada}
-            usuario={usuario}
-            aoExcluir={excluirPublicacao}
-          />
-        </aside>
+              <AcoesDaPublicacao
+                publicacao={selecionada}
+                usuario={usuario}
+                aoExcluir={excluirPublicacao}
+              />
+            </>
+          }
+        />
       )}
     </section>
   );
 }
 
+function fatosDaPublicacao(publicacao) {
+  return [
+    {
+      termo: 'Autoria',
+      valor: ordenarAutores(publicacao.autores).map((autor) => (
+        <span className="autor-linha" key={autor.id ?? autor.nome}>
+          <span className="avatar">{iniciaisDoNome(autor.nome)}</span>
+          {autor.nome}
+        </span>
+      )),
+    },
+    { termo: 'Veículo', valor: publicacao.veiculo },
+    publicacao.projeto && {
+      termo: 'Projeto',
+      valor: <Link to={`/projetos/${publicacao.projeto.id}`}>{publicacao.projeto.titulo}</Link>,
+    },
+    publicacao.areas?.length > 0 && {
+      termo: 'Áreas',
+      valor: (
+        <ul className="lista-chips">
+          {publicacao.areas.map((area) => (
+            <li className="chip" key={area.id}>{area.nome}</li>
+          ))}
+        </ul>
+      ),
+    },
+  ].filter(Boolean);
+}
+
 function AcoesDaPublicacao({ publicacao, usuario, aoExcluir }) {
+  if (!podeCadastrarNoAcervo(usuario)) {
+    return null;
+  }
+
   return (
     <div className="acoes-registro">
-      <Link className="botao botao--discreto" to={`/publicacoes/${publicacao.id}`}>
-        Abrir publicação
+      <Link className="botao botao--discreto" to={`/publicacoes/${publicacao.id}/editar`}>
+        Editar
       </Link>
-      {podeCadastrarNoAcervo(usuario) && (
-        <>
-          <Link className="botao botao--discreto" to={`/publicacoes/${publicacao.id}/editar`}>
-            Editar
-          </Link>
-          <button type="button" className="botao botao--discreto" onClick={() => aoExcluir(publicacao)}>
-            Excluir
-          </button>
-        </>
-      )}
+      <button type="button" className="botao botao--discreto" onClick={() => aoExcluir(publicacao)}>
+        Excluir
+      </button>
     </div>
   );
 }

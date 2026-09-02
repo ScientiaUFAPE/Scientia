@@ -1,8 +1,9 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 
 import { useRolagemDiscreta } from '../utils/useRolagemDiscreta.js';
 import { BarraLateral, Glifo, ROTULOS_ROTA } from './BarraLateral.jsx';
+import { PainelRapidoContexto } from './PainelRapido.jsx';
 
 function localAtual(caminho) {
   const raiz = `/${caminho.split('/')[1] ?? ''}`;
@@ -15,11 +16,12 @@ export function Layout() {
   const { pathname } = useLocation();
   const local = localAtual(pathname);
   const canvas = useRef(null);
+  const [comPainel, setComPainel] = useState(false);
 
   useRolagemDiscreta(canvas);
 
   return (
-    <div className="layout">
+    <div className={`layout${comPainel ? ' layout--com-painel' : ''}`}>
       <BarraLateral />
 
       <main className="canvas rolagem-discreta" ref={canvas}>
@@ -33,7 +35,9 @@ export function Layout() {
         )}
 
         <div className="layout__conteudo">
-          <Outlet />
+          <PainelRapidoContexto.Provider value={setComPainel}>
+            <Outlet />
+          </PainelRapidoContexto.Provider>
         </div>
       </main>
     </div>

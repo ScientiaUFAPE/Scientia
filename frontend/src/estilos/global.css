@@ -141,6 +141,16 @@ h2 {
   background-color: var(--preenche-forte);
 }
 
+.botao--acento {
+  width: 100%;
+  background-color: var(--acento);
+  color: var(--tinta);
+}
+
+.botao--acento:hover:not(:disabled) {
+  background-color: var(--acento-hover);
+}
+
 .botao--discreto {
   background-color: var(--canvas);
   border-color: var(--fio);
