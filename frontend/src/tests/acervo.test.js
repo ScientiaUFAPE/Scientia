@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { juntarNomes, percentualRelativo, periodoDosAnos } from '../utils/acervo.js';
+import { juntarNomes, montarAgora, percentualRelativo, periodoDosAnos } from '../utils/acervo.js';
+
+function listaDe(tamanho, prefixo) {
+  return Array.from({ length: tamanho }, (_, indice) => ({ id: `${prefixo}${indice + 1}` }));
+}
 
 describe('Cálculos da visão geral', () => {
   it('resume o período pelo primeiro e pelo último ano cadastrados', () => {
@@ -28,5 +32,44 @@ describe('Cálculos da visão geral', () => {
     expect(juntarNomes(['Redes', 'Banco de Dados', 'Bioinformática'])).toBe(
       'Redes, Banco de Dados e Bioinformática',
     );
+  });
+
+  it('em "Agora", prioriza até três vagas e completa com editais até o limite', () => {
+    const cincoVagas = listaDe(5, 'vaga-');
+    const cincoEditais = listaDe(5, 'edital-');
+
+    expect(montarAgora(cincoVagas, cincoEditais)).toEqual({
+      vagas: cincoVagas.slice(0, 3),
+      editais: cincoEditais.slice(0, 2),
+    });
+  });
+
+  it('com poucas vagas, os editais preenchem o restante das cinco posições', () => {
+    const umaVaga = listaDe(1, 'vaga-');
+    const seisEditais = listaDe(6, 'edital-');
+
+    expect(montarAgora(umaVaga, seisEditais)).toEqual({
+      vagas: umaVaga,
+      editais: seisEditais.slice(0, 4),
+    });
+  });
+
+  it('sem vagas abertas, os editais ocupam as cinco posições', () => {
+    const cincoEditais = listaDe(5, 'edital-');
+
+    expect(montarAgora([], cincoEditais)).toEqual({
+      vagas: [],
+      editais: cincoEditais,
+    });
+  });
+
+  it('sem editais suficientes, a lista fica com menos de cinco itens', () => {
+    const duasVagas = listaDe(2, 'vaga-');
+    const umEdital = listaDe(1, 'edital-');
+
+    expect(montarAgora(duasVagas, umEdital)).toEqual({
+      vagas: duasVagas,
+      editais: umEdital,
+    });
   });
 });

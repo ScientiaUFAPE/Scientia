@@ -136,3 +136,11 @@ export function juntarNomes(nomes = []) {
 
   return `${nomes.slice(0, -1).join(', ')} e ${nomes[nomes.length - 1]}`;
 }
+
+export function montarAgora(vagas = [], editais = [], limite = 5) {
+  const vagasEscolhidas = vagas.slice(0, Math.min(3, limite));
+  const espaco = Math.max(limite - vagasEscolhidas.length, 0);
+  const editaisEscolhidos = editais.slice(0, espaco);
+
+  return { vagas: vagasEscolhidas, editais: editaisEscolhidos };
+}

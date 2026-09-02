@@ -7,6 +7,7 @@ import * as relatorioService from '../servicos/relatorioService.js';
 import * as vagaService from '../servicos/vagaService.js';
 import {
   juntarNomes,
+  montarAgora,
   percentualRelativo,
   periodoDosAnos,
   ROTULOS_TIPO,
@@ -16,8 +17,10 @@ const AREAS_VISIVEIS = 8;
 const SEM_PUBLICACOES = { publicacoes: [] };
 const SEM_VAGAS = { vagas: [], paginacao: { total: 0 } };
 const SEM_EDITAIS = { editais: [] };
+const FORMATADOR_MES_ANO = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' });
 
-export function VisaoGeral({ anoAtual = new Date().getFullYear() }) {
+export function VisaoGeral({ dataAtual = new Date() }) {
+  const anoAtual = dataAtual.getFullYear();
   const [indicadores, setIndicadores] = useState(null);
   const [recentes, setRecentes] = useState([]);
   const [vagas, setVagas] = useState([]);
@@ -74,7 +77,7 @@ export function VisaoGeral({ anoAtual = new Date().getFullYear() }) {
 
   return (
     <section className="visao-geral">
-      <p className="rotulo">Panorama · {anoAtual}</p>
+      <p className="rotulo">Panorama · {FORMATADOR_MES_ANO.format(dataAtual)}</p>
 
       {erro && <p className="alerta alerta--erro">{erro}</p>}
 
@@ -247,6 +250,8 @@ function Apoio({ indicadores }) {
 }
 
 function Recentes({ publicacoes }) {
+  const recentes = publicacoes.slice(0, 5);
+
   return (
     <section>
       <div className="secao__topo">
@@ -256,11 +261,11 @@ function Recentes({ publicacoes }) {
         </Link>
       </div>
 
-      {publicacoes.length === 0 ? (
+      {recentes.length === 0 ? (
         <p className="secao__vazio">Nenhuma publicação cadastrada ainda.</p>
       ) : (
         <ul className="lista-acervo">
-          {publicacoes.map((publicacao) => (
+          {recentes.map((publicacao) => (
             <li
               className="linha-acervo linha-acervo--dupla linha-acervo--navega"
               key={publicacao.id}
@@ -287,23 +292,32 @@ function Recentes({ publicacoes }) {
 
 function Agora({ vagas, totalVagas, editais, anoAtual }) {
   const vazio = vagas.length === 0 && editais.length === 0;
+  const agora = montarAgora(vagas, editais);
 
   return (
     <section>
-      <div className="secao__topo">
+      <div className="secao__topo secao__topo--agora">
         <span className="ponto-acento" />
         <span className="rotulo">Agora</span>
-        <span className="secao__extra">
-          {contarVagas(totalVagas)} {totalVagas === 1 ? 'aberta' : 'abertas'} ·{' '}
-          {contarEditais(editais.length)} de {anoAtual}
-        </span>
+        <div className="secao__acoes">
+          <span className="secao__extra secao__resumo">
+            {contarVagas(totalVagas)} {totalVagas === 1 ? 'aberta' : 'abertas'} ·{' '}
+            {contarEditais(editais.length)} de {anoAtual}
+          </span>
+          <Link className="ligacao" to="/vagas">
+            Ver todas as vagas
+          </Link>
+          <Link className="ligacao" to="/editais">
+            Ver todos os editais
+          </Link>
+        </div>
       </div>
 
       {vazio ? (
         <p className="secao__vazio">Nenhuma vaga aberta nem edital deste ano.</p>
       ) : (
         <ul className="lista-acervo">
-          {vagas.map((vaga) => (
+          {agora.vagas.map((vaga) => (
             <li className="linha-acervo linha-acervo--dupla" key={`vaga-${vaga.id}`}>
               <span className="linha-acervo__corpo">
                 <span className="linha-acervo__titulo">{vaga.titulo}</span>
@@ -317,7 +331,7 @@ function Agora({ vagas, totalVagas, editais, anoAtual }) {
             </li>
           ))}
 
-          {editais.map((edital) => (
+          {agora.editais.map((edital) => (
             <li className="linha-acervo linha-acervo--dupla" key={`edital-${edital.id}`}>
               <span className="linha-acervo__corpo">
                 <span className="linha-acervo__titulo">{edital.nome}</span>

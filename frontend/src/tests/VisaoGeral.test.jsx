@@ -70,16 +70,45 @@ const EDITAIS = {
   ],
 };
 
+const SEIS_PUBLICACOES = {
+  publicacoes: Array.from({ length: 6 }, (_, indice) => ({
+    id: indice + 1,
+    titulo: `Publicação ${indice + 1}`,
+    tipo: 'artigo',
+    ano: 2026,
+    areas: [],
+  })),
+};
+
+const CINCO_VAGAS = {
+  vagas: Array.from({ length: 5 }, (_, indice) => ({
+    id: indice + 1,
+    titulo: `Vaga ${indice + 1}`,
+    qtdVagas: 1,
+    projeto: { id: 1, titulo: 'Projeto qualquer' },
+  })),
+  paginacao: { pagina: 1, porPagina: 5, total: 5 },
+};
+
+const CINCO_EDITAIS = {
+  editais: Array.from({ length: 5 }, (_, indice) => ({
+    id: indice + 1,
+    nome: `Edital ${indice + 1}`,
+    ano: 2026,
+    totalProjetos: 1,
+  })),
+};
+
 const VINTE_E_QUATRO_AREAS = Array.from({ length: 24 }, (_, indice) => ({
   idArea: indice + 1,
   nome: `Área ${indice + 1}`,
   quantidade: 24 - indice,
 }));
 
-function renderizarTela() {
+function renderizarTela(dataAtual = new Date(2026, 8, 2)) {
   return render(
     <MemoryRouter>
-      <VisaoGeral anoAtual={2026} />
+      <VisaoGeral dataAtual={dataAtual} />
     </MemoryRouter>,
   );
 }
@@ -98,6 +127,13 @@ describe('Visão geral', () => {
 
   afterEach(() => {
     vi.clearAllMocks();
+  });
+
+  it('mostra a etiqueta de panorama com o mês por extenso e o ano corrente', async () => {
+    renderizarTela(new Date(2026, 8, 2));
+    await act(async () => {});
+
+    expect(screen.getByText('Panorama · setembro de 2026')).toBeInTheDocument();
   });
 
   it('abre com a frase-síntese do acervo, do período e do que está em aberto', async () => {
@@ -201,6 +237,16 @@ describe('Visão geral', () => {
     );
   });
 
+  it('limita as recentes a cinco mesmo que o serviço devolva mais publicações', async () => {
+    publicacaoService.listar.mockResolvedValue(SEIS_PUBLICACOES);
+
+    renderizarTela();
+    await act(async () => {});
+
+    expect(screen.getAllByText(/^Publicação \d$/)).toHaveLength(5);
+    expect(screen.queryByText('Publicação 6')).not.toBeInTheDocument();
+  });
+
   it('em "Agora", traz as vagas abertas e só os editais do ano corrente', async () => {
     renderizarTela();
     await act(async () => {});
@@ -221,6 +267,33 @@ describe('Visão geral', () => {
     expect(within(agora).getByText('PIBIC/UFAPE 2026')).toBeInTheDocument();
     expect(within(agora).getByText('3 projetos')).toBeInTheDocument();
     expect(within(agora).queryByText('Edital Universal nº 03/2022')).not.toBeInTheDocument();
+    expect(within(agora).getByRole('link', { name: 'Ver todas as vagas' })).toHaveAttribute(
+      'href',
+      '/vagas',
+    );
+    expect(within(agora).getByRole('link', { name: 'Ver todos os editais' })).toHaveAttribute(
+      'href',
+      '/editais',
+    );
+  });
+
+  it('em "Agora", limita a cinco itens priorizando até três vagas', async () => {
+    vagaService.listar.mockResolvedValue(CINCO_VAGAS);
+    editalService.listar.mockResolvedValue(CINCO_EDITAIS);
+
+    renderizarTela();
+    await act(async () => {});
+
+    const agora = screen.getByText('Agora').closest('section');
+
+    expect(within(agora).getByText('5 vagas abertas · 5 editais de 2026')).toBeInTheDocument();
+    expect(agora.querySelectorAll('.linha-acervo')).toHaveLength(5);
+    expect(within(agora).getByText('Vaga 1')).toBeInTheDocument();
+    expect(within(agora).getByText('Vaga 3')).toBeInTheDocument();
+    expect(within(agora).queryByText('Vaga 4')).not.toBeInTheDocument();
+    expect(within(agora).getByText('Edital 1')).toBeInTheDocument();
+    expect(within(agora).getByText('Edital 2')).toBeInTheDocument();
+    expect(within(agora).queryByText('Edital 3')).not.toBeInTheDocument();
   });
 
   it('sem produções, troca a frase e esconde o ranking', async () => {
